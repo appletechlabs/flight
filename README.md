@@ -6,8 +6,7 @@ Flight API Combined with Following Flight API's
 # Requirements
 
 - PHP 7.1+
-- SOAP, XSL and DOM extensions activated
-- A WSDL & authentication details from Amadeus (SoapHeader 4 or SoapHeader 2)
+- [amadeus-ws-client](https://github.com/amabnl/amadeus-ws-client)
 
 # Developed By
 - [Supun Praneeth](https://github.com/spmsupun)
