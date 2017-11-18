@@ -2,6 +2,7 @@
 ### Composer template
 composer.phar
 /vendor/
+/tests/
 .idea/
 index.php
 
