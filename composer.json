@@ -1,0 +1,32 @@
+{
+    "name": "appletechlabs/flight",
+    "description": "Combination of all the flight APIs",
+    "type": "library",
+    "license": "MIT",
+    "minimum-stability": "beta",    
+	"authors": [
+	    {
+	      "name": "Supun Praneeth",
+	      "email": "spmsupun@gmail.com",
+            "role": "Developer"
+	    },
+	    {
+	      "name": "Arosha De Silva",
+	      "email": "aroshajayasanka@gmail.com",
+            "homepage": "http://arosha.online",
+            "role": "Developer"
+
+	    }
+  	],
+    "require": {
+    	"amabnl/amadeus-ws-client": "^1.5"
+	},
+    "require-dev": {
+    	"phpunit/phpunit": "6.4.*"
+	},
+	  "autoload": {
+	    "psr-4": {
+	      "appletechlabs\\flight\\": "src"
+	    }
+	}
+}
