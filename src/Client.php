@@ -1,9 +1,8 @@
 <?php
 
+namespace appletechlabs\flight;
 
-
-
-use Amadeus\Client;
+use Amadeus\Client as AmadeusClient;
 use Amadeus\Client\Params;
 use Amadeus\Client\Result;
 use Amadeus\Client\RequestOptions\PnrRetrieveOptions;
@@ -15,9 +14,6 @@ use Amadeus\Client\RequestOptions\Fare\MPDate;
 use Amadeus\Client\RequestOptions\Fare\MPLocation;
 
 use Amadeus\Client\RequestOptions\SalesReportsDisplayQueryReportOptions;
-
-
-namespace appletechlabs\flight;
 
 class Client
 {
