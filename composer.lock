@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "18c83b960b7802e8fa79c2c8ab3fe025",
+    "content-hash": "865bdec69c6e67de7230466f50b92a47",
     "packages": [
         {
             "name": "amabnl/amadeus-ws-client",
@@ -1580,5 +1580,8 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],
-    "platform-dev": []
+    "platform-dev": [],
+    "platform-overrides": {
+        "php": "7.1.1"
+    }
 }
