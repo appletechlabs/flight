@@ -18,6 +18,11 @@
 
 	    }
   	],
+    "config": {
+        "platform": {
+            "php": "7.1.*"
+        }
+    },
     "require": {
     	"amabnl/amadeus-ws-client": "^1.5"
 	},
