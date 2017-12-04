@@ -2,30 +2,51 @@
 
 namespace appletechlabs\flight;
 
-use Amadeus\Client as AmadeusClient;
-use Amadeus\Client\Params;
-use Amadeus\Client\Result;
-use Amadeus\Client\RequestOptions\PnrRetrieveOptions;
+use appletechlabs\flight\Providers\AmadeusSoapProvider;
 
-use Amadeus\Client\RequestOptions\FareMasterPricerCalendarOptions;
-use Amadeus\Client\RequestOptions\Fare\MPPassenger;
-use Amadeus\Client\RequestOptions\Fare\MPItinerary;
-use Amadeus\Client\RequestOptions\Fare\MPDate;
-use Amadeus\Client\RequestOptions\Fare\MPLocation;
 
-use Amadeus\Client\RequestOptions\SalesReportsDisplayQueryReportOptions;
-
-class Client
+/**
+* 
+*/
+class Client 
 {
-	private $ApiProvider = 'AMADEUS';
-	
-	public function setup()
-	{
-		$params = new Params;
-		return $params;
-	}
 
+  public $AmadeusSoap;
+  
+  public function __construct($data = [])
+  {
+      $this->loadFromArray($data);
+  }
 
+  protected function loadFromArray(array $data)
+  {
+      if (count($data) > 0) {
+            if (isset($data['amadeus'])) {
+              $this->AmadeusSoap = new AmadeusSoapProvider();
+              $this->AmadeusSoap->officeId = $data['amadeus']['officeId'];
+              $this->AmadeusSoap->userId = $data['amadeus']['userId'];
+              $this->AmadeusSoap->passwordData = $data['amadeus']['passwordData'];
+              $this->AmadeusSoap->wsdl = $data['amadeus']['wsdl'];
+              $this->AmadeusSoap->passwordLength = $data['amadeus']['passwordLength'];
+              $this->AmadeusSoap->receivedFrom = $data['amadeus']['receivedFrom'];
+            }
+        }
+  }
+
+  public function test()
+  {
+    return $this->AmadeusSoap;
+  }
+
+  public function setup()
+  {
+    $this->AmadeusSoap->setup();
+  }
+
+  public function FareMasterPricerCalendar($calendarSearchOpt)
+  {
+      return $this->AmadeusSoap->FareMasterPricerCalendar($calendarSearchOpt);
+  }
 
 
 }
