@@ -1,4 +1,7 @@
 # Flight Package
+
+[![Package version](https://img.shields.io/packagist/vpre/symfony/symfony.svg)](https://packagist.org/packages/appletechlabs/flight)
+
 Flight API Combined with Following Flight API's
 - [x] Amadeus
 - [ ] Sabre (Not Available Yet)
