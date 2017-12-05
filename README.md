@@ -1,6 +1,7 @@
 # Flight Package
 
-[![Package version](https://img.shields.io/packagist/vpre/symfony/symfony.svg)](https://packagist.org/packages/appletechlabs/flight)
+[![Latest Stable Version](https://poser.pugx.org/appletechlabs/flight/v/stable)](https://packagist.org/packages/appletechlabs/flight)
+[![License](https://poser.pugx.org/appletechlabs/flight/license)](https://packagist.org/packages/appletechlabs/flight)
 
 Flight API Combined with Following Flight API's
 - [x] Amadeus
