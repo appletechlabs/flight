@@ -43,9 +43,21 @@ class Client
     $this->AmadeusSoap->setup();
   }
 
+
+
   public function FareMasterPricerCalendar($calendarSearchOpt)
   {
-      return $this->AmadeusSoap->FareMasterPricerCalendar($calendarSearchOpt);
+      $calendarResult =  $this->AmadeusSoap->FareMasterPricerCalendar($calendarSearchOpt);
+      return $calendarResult;
+
+
+  }
+  public function FareMasterPricerCalendarSort($calendarSearchOpt)
+  {
+      $calendarResult =  $this->AmadeusSoap->FareMasterPricerCalendar($calendarSearchOpt);
+      return $this->AmadeusSoap->calendarMin($calendarResult['result']);
+
+
   }
 
 

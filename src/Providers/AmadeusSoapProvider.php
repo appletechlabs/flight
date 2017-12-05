@@ -133,7 +133,6 @@ class AmadeusSoapProvider
   public function getItinerarCount($itineraries)
   {
 
-
   	foreach ($itineraries as $itinerary => $value) {
 
   		//var_dump($value['departureLocation']);
@@ -154,6 +153,62 @@ class AmadeusSoapProvider
   	return $MPItineraries;
 
   }
+
+
+  	public function getflightPrice($ref, $recommendations)
+	{
+	    foreach ($recommendations as $recommendation) 
+	    {
+	        $segments = $recommendation->segmentFlightRef;
+	        foreach ($segments as $segmentKey => $segment)
+	        { 
+	           if (isset($segment->referencingDetail)) {
+	                $refQualifier = $segment->referencingDetail->refQualifier;
+	                $refNumber = $segment->referencingDetail->refNumber;
+	            }
+	            else
+	            {
+	                #if only one recommendation for this particular pricing
+	                $refQualifier = $segment->refQualifier;
+	                $refNumber = $segment->refNumber;
+	            }            
+	            if ($refNumber == $ref) 
+	            {
+	                $price = $recommendation->paxFareProduct->paxFareDetail->totalFareAmount;
+	                return $price;
+	            }
+	        }
+	    }
+	}
+
+	public function calendarMin($amflightResults)
+	{
+		//var_dump($amflightResults->response->flightIndex[0]->groupOfFlights);
+		/* This doesn't work with multiple itineray options */
+		/* Todo : array check*/
+	    $groupOfFlights = $amflightResults->response->flightIndex->groupOfFlights;
+	    $recommendations = $amflightResults->response->recommendation;
+	    foreach ($groupOfFlights as $key => $flight) 
+	    {
+	        $propFlightRef = $flight->propFlightGrDetail->flightProposal[0]->ref;
+	        $flightPrice = $this->getflightPrice($propFlightRef,$recommendations);
+	        $date = $flight->flightDetails[0]->flightInformation->productDateTime->dateOfDeparture;
+	        $dateOfDeparture  = date_create_from_format('dmy',$date);
+
+	        $result->flight[$key] = new \stdClass();/* fix undified stdObject warning */
+	        $result->flight[$key]->ref = $propFlightRef;
+	        $result->flight[$key]->dateOfDeparture =  $dateOfDeparture->format('d-m-y');
+	        $result->flight[$key]->dateMonth =  $dateOfDeparture->format('d M');
+	        $result->flight[$key]->flightPrice =  $flightPrice;
+	    }
+
+	   usort($result->flight,function ($a, $b){
+			    return strtotime($a->dateOfDeparture) - strtotime($b->dateOfDeparture);
+			});
+
+	   return $result->flight;
+	}
+
 	public function FareMasterPricerCalendar($opt)
 	{
 
