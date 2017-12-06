@@ -60,6 +60,23 @@ class Client
 
   }
 
+  public function FareMasterPricerTravelboardSearch($Opt)
+  {
+      $fmptResult = $this->AmadeusSoap->FareMasterPricerTravelboardSearch($Opt);
+      return $fmptResult;
+
+
+     // return  $this->AmadeusSoap->optimizeResults($fmptResult['result']);
+  }
+
+  public function fareBoardSearchOptimzed($fmptResult)
+  {
+
+
+     return  $this->AmadeusSoap->optimizeResults($fmptResult['result']);
+  }
+
+
 
 }
 

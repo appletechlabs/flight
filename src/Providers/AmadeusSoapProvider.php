@@ -136,8 +136,8 @@ class AmadeusSoapProvider
   	foreach ($itineraries as $itinerary => $value) {
 
   		//var_dump($value['departureLocation']);
-
-  		$MPItinerary = new MPItinerary([
+  		if (isset($value['rangeMode'])) {
+  			$MPItinerary = new MPItinerary([
                    'departureLocation' => new MPLocation(['city' => $value['departureLocation']]),
                    'arrivalLocation' => new MPLocation(['city' => $value['arrivalLocation']]),
                    'date' => new MPDate([
@@ -146,6 +146,20 @@ class AmadeusSoapProvider
                        'range' => $value['range'],
                    ])
                ]);
+  		}
+  		else
+  		{
+  			$MPItinerary = new MPItinerary([
+                   'departureLocation' => new MPLocation(['city' => $value['departureLocation']]),
+                   'arrivalLocation' => new MPLocation(['city' => $value['arrivalLocation']]),
+                   'date' => new MPDate([
+                       'date' => $value['date'],
+                   ])
+               ]);
+
+  		}
+
+  		
 
 
   		$MPItineraries[] = $MPItinerary;
@@ -157,21 +171,53 @@ class AmadeusSoapProvider
 
   	public function getflightPrice($ref, $recommendations)
 	{
+	    //var_dump($recommendations);
 	    foreach ($recommendations as $recommendation) 
 	    {
 	        $segments = $recommendation->segmentFlightRef;
 	        foreach ($segments as $segmentKey => $segment)
 	        { 
-	           if (isset($segment->referencingDetail)) {
-	                $refQualifier = $segment->referencingDetail->refQualifier;
-	                $refNumber = $segment->referencingDetail->refNumber;
+	           if (isset($segment->referencingDetail)) 
+	           	{
+	           		if (is_array($segment->referencingDetail)) 
+	           		{
+	           			foreach ($segment->referencingDetail as $rd) 
+	           			{
+	           				if ($rd->refQualifier == "S") 
+	           				{
+	           					$refQualifier = $rd->refQualifier;
+	                			$refNumber = $rd->refNumber;
+	           				}
+	           			}
+	           		}
+	           		else
+	           		{
+	           			$refQualifier = $segment->referencingDetail->refQualifier;
+	                	$refNumber = $segment->referencingDetail->refNumber;
+	           		}
+	                
 	            }
 	            else
 	            {
-	                #if only one recommendation for this particular pricing
-	                $refQualifier = $segment->refQualifier;
-	                $refNumber = $segment->refNumber;
-	            }            
+	            	/*if only one recommendation for this particular pricing*/
+	            	//var_dump($segment);
+	            	if (is_array($segment)) {
+	            		foreach ($segment as $sg) 
+	           			{
+	           				if ($sg->refQualifier == "S") 
+	           				{
+	           					$refQualifier = $sg->refQualifier;
+	                			$refNumber = $sg->refNumber;
+	           				}
+	           			}
+	            	}
+	            	else
+	            	{
+	            		$refQualifier = $segment->refQualifier;
+	                	$refNumber = $segment->refNumber;
+	            	} 
+	            }
+
 	            if ($refNumber == $ref) 
 	            {
 	                $price = $recommendation->paxFareProduct->paxFareDetail->totalFareAmount;
@@ -195,7 +241,7 @@ class AmadeusSoapProvider
 	        $date = $flight->flightDetails[0]->flightInformation->productDateTime->dateOfDeparture;
 	        $dateOfDeparture  = date_create_from_format('dmy',$date);
 
-	        $result->flight[$key] = new \stdClass();/* fix undified stdObject warning */
+	        $result->flight[$key] = new \stdClass();/* fix undefined stdObject warning */
 	        $result->flight[$key]->ref = $propFlightRef;
 	        $result->flight[$key]->dateOfDeparture =  $dateOfDeparture->format('d-m-y');
 	        $result->flight[$key]->dateMonth =  $dateOfDeparture->format('d M');
@@ -205,6 +251,29 @@ class AmadeusSoapProvider
 	   usort($result->flight,function ($a, $b){
 			    return strtotime($a->dateOfDeparture) - strtotime($b->dateOfDeparture);
 			});
+
+	   return $result->flight;
+	}
+
+	public function optimizeResults($amflightResults)
+	{
+		//var_dump($amflightResults);
+		/* This doesn't work with multiple itineray options */
+		/* Todo : array check*/
+	    $groupOfFlights = $amflightResults->response->flightIndex->groupOfFlights;
+	    $recommendations = $amflightResults->response->recommendation;
+	    foreach ($groupOfFlights as $key => $flight) 
+	    {
+	        $propFlightRef = $flight->propFlightGrDetail->flightProposal[0]->ref;
+	        $flightPrice = $this->getflightPrice($propFlightRef,$recommendations);
+	        $flightDetails = $flight->flightDetails;
+	        //$dateOfDeparture  = date_create_from_format('dmy',$date);
+
+	        $result->flight[$key] = new \stdClass();/* fix undefined stdObject warning */
+	        $result->flight[$key]->ref = $propFlightRef;
+	        $result->flight[$key]->flightDetails =  $flightDetails;
+	        $result->flight[$key]->flightPrice =  $flightPrice;
+	    }
 
 	   return $result->flight;
 	}
@@ -229,31 +298,22 @@ class AmadeusSoapProvider
        'result' => $fareMPC ];
    }
 
-  public function FareMasterPricerTravelboardSearch()
+  public function FareMasterPricerTravelboardSearch($opt)
   {
+  	$passengers = $this->getPassengersCount($opt->passengers);
+	$itineraries = $this->getItinerarCount($opt->itineraries);
+
     $opt = new FareMasterPricerTbSearch([
-        'nrOfRequestedResults' => 200,
-        'nrOfRequestedPassengers' => 1,
-        'passengers' => [
-            new MPPassenger([
-                'type' => MPPassenger::TYPE_ADULT,
-                'count' => 1
-            ])
-        ],
-        'itinerary' => [
-            new MPItinerary([
-                'departureLocation' => new MPLocation(['city' => 'CMB']),
-                'arrivalLocation' => new MPLocation(['city' => 'SIN']),
-                'date' => new MPDate([
-                    'dateTime' => new \DateTime('2017-12-15T00:00:00+0000', new \DateTimeZone('UTC'))
-                ])
-            ])
-        ],
+        'nrOfRequestedResults' => $opt->nrOfRequestedResults,
+        'nrOfRequestedPassengers' => $opt->nrOfRequestedPassengers,
+        'passengers' => $passengers,
+        'itinerary' => $itineraries,
          'currencyOverride' => 'USD'
     ]);
 
     $fareMPTS = $this->amadeusClient->fareMasterPricerTravelBoardSearch($opt);
-    return $fareMPTS;
+    return [ 'provider' => self::PROVIDER,
+       'result' => $fareMPTS ];
 
   }
 
