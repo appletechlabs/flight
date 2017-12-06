@@ -220,7 +220,7 @@ class AmadeusSoapProvider
 
 	            if ($refNumber == $ref) 
 	            {
-	                $price = $recommendation->paxFareProduct->paxFareDetail->totalFareAmount;
+	                $price = $recommendation->paxFareProduct;
 	                return $price;
 	            }
 	        }
