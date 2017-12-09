@@ -156,12 +156,7 @@ class AmadeusSoapProvider
                        'date' => $value['date'],
                    ])
                ]);
-
-  		}
-
-  		
-
-
+  		}	
   		$MPItineraries[] = $MPItinerary;
   	}
   	return $MPItineraries;
@@ -254,6 +249,88 @@ class AmadeusSoapProvider
 
 	   return $result->flight;
 	}
+	public function getCabinDescription($majCabin)
+	{
+		 switch($majCabin) {
+            case 'C':
+                return "Business";
+                break;
+            case 'F':
+                return "First, supersonic";
+                break;
+            case 'M':
+                return "Economic Standard";
+                break;          
+            case 'W':
+                return "Economic Premium";
+                break;          
+            case 'Y':
+                return "Economic";
+                break;          
+            default:
+                return "N/A";
+        }
+	}
+
+	public function seatStatus($groupOfFares)
+	{
+		$status = "Seats Available";
+		if (is_array($groupOfFares)) {
+			foreach ($groupOfFares as $key => $Fare) {
+				if (($Fare->productInformation->cabinProduct->avlStatus)<9) {
+	                $status = "few Seats Available";
+	            }
+			}
+		}
+		else
+	   	{
+	    if ($groupOfFares->productInformation) {
+	        if ($groupOfFares->productInformation) {
+	           if (($groupOfFares->productInformation->cabinProduct->avlStatus)<9) {
+	                $status = "few Seats Available";
+	            } 
+	        }
+	    }   
+	   }
+	   return $status;
+	}
+
+	public function amadeusDateToDate($productDateTime)
+	{
+		$arrival = DateTime::createFromFormat('dmy-', '15-Feb-2009');
+	    $departure = DateTime::createFromFormat('j-M-Y', '15-Feb-2009');
+	}
+	public function flightStops($flightDetails)
+	{
+		var_dump($flightDetails);
+		$stopInfo =  new \stdClass();
+		$stopInfo->stops = "Direct";
+    	$stopInfo->TimeDelay = " ";
+
+    	if (is_array($flightDetails)) {
+    		//var_dump($flightDetails);
+    		if (count($flightDetails)-1 == 1) {
+	            $stopInfo->stops = (count($flightDetails)-1 ) . " Stop";
+	        }
+	        else
+	        {
+	        	 $stopInfo->stops = (count($flightDetails)-1 ) . " Stops";
+	        }
+
+	        foreach ($flightDetails as $key => $flight) {
+	        	$dateOfArrival = $flight->flightInformation->productDateTime->dateOfArrival;
+	        	$dateOfDeparture = $flight->flightInformation->productDateTime->dateOfDeparture;
+	        	$timeOfArrival = $flight->flightInformation->productDateTime->timeOfArrival;
+	        	$timeOfDeparture = $flight->flightInformation->productDateTime->timeOfDeparture;
+
+	        	
+	        }
+    	}
+
+    	 return $stopInfo;
+	}
+
+
 
 	public function optimizeResults($amflightResults)
 	{
@@ -268,11 +345,17 @@ class AmadeusSoapProvider
 	        $flightPrice = $this->getflightPrice($propFlightRef,$recommendations);
 	        $flightDetails = $flight->flightDetails;
 	        //$dateOfDeparture  = date_create_from_format('dmy',$date);
+	        $majCabin = $this->getCabinDescription($flightPrice->fareDetails->majCabin->bookingClassDetails->designator);
+	        $seatstatus = $this->seatStatus($flightPrice->fareDetails->groupOfFares);
+	        $stopInfo =  $this->flightStops($flightDetails);
 
 	        $result->flight[$key] = new \stdClass();/* fix undefined stdObject warning */
 	        $result->flight[$key]->ref = $propFlightRef;
 	        $result->flight[$key]->flightDetails =  $flightDetails;
 	        $result->flight[$key]->flightPrice =  $flightPrice;
+	        $result->flight[$key]->majCabinDesc =  $majCabin;
+	        $result->flight[$key]->seatstatus =  $seatstatus;
+	        $result->flight[$key]->stopInfo =  $stopInfo;
 	    }
 
 	   return $result->flight;
