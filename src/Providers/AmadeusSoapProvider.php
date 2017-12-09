@@ -302,7 +302,7 @@ class AmadeusSoapProvider
 	}
 	public function flightStops($flightDetails)
 	{
-		var_dump($flightDetails);
+		//var_dump($flightDetails);
 		$stopInfo =  new \stdClass();
 		$stopInfo->stops = "Direct";
     	$stopInfo->TimeDelay = " ";
