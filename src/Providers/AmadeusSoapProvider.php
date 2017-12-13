@@ -319,17 +319,17 @@ class AmadeusSoapProvider
 	public function optimizeInfo($flightDetails)
 	{
 		$info = new \stdClass();
-		$info->stops = "Direct";
+		$info->stopInfo = "Direct";
 		$airports = [];
 
 		if (is_array($flightDetails)) {
 
 			if (count($flightDetails)-1 == 1) {
-	            $info->stops = (count($flightDetails)-1 ) . " Stop";
+	            $info->stopInfo = (count($flightDetails)-1 ) . " Stop";
 	        }
 	        else
 	        {
-	        	 $info->stops = (count($flightDetails)-1 ) . " Stops";
+	        	 $info->stopInfo = (count($flightDetails)-1 ) . " Stops";
 	        }
 
 			foreach ($flightDetails as $flight) {
@@ -378,7 +378,7 @@ class AmadeusSoapProvider
 	        $result->flight[$key]->ref = $propFlightRef;
 	        $result->flight[$key]->flightDetails =  $flightDetails;
 	        $result->flight[$key]->flightPrice =  $flightPrice;
-	        $result->flight[$key]->stops = $info->stopInfo;
+	        $result->flight[$key]->stopInfo = $info->stopInfo;
 	        $result->flight[$key]->airports = $info->airports;
 	        $result->flight[$key]->majCabinDesc =  $majCabin;
 	        $result->flight[$key]->seatstatus =  $seatstatus;
