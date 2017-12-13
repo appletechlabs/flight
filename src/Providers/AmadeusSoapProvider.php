@@ -378,7 +378,7 @@ class AmadeusSoapProvider
 	        $result->flight[$key]->ref = $propFlightRef;
 	        $result->flight[$key]->flightDetails =  $flightDetails;
 	        $result->flight[$key]->flightPrice =  $flightPrice;
-	        $result->flight[$key]->stops = $info->stops;
+	        $result->flight[$key]->stops = $info->stopInfo;
 	        $result->flight[$key]->airports = $info->airports;
 	        $result->flight[$key]->majCabinDesc =  $majCabin;
 	        $result->flight[$key]->seatstatus =  $seatstatus;
