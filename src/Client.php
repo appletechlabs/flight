@@ -71,8 +71,6 @@ class Client
 
   public function fareBoardSearchOptimzed($fmptResult)
   {
-
-
      return  $this->AmadeusSoap->optimizeResults($fmptResult['result']);
   }
 
