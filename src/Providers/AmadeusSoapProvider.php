@@ -233,7 +233,14 @@ class AmadeusSoapProvider
 	    {
 	        $propFlightRef = $flight->propFlightGrDetail->flightProposal[0]->ref;
 	        $flightPrice = $this->getflightPrice($propFlightRef,$recommendations);
-	        $date = $flight->flightDetails[0]->flightInformation->productDateTime->dateOfDeparture;
+          if (is_array($flight->flightDetails)) 
+          {
+            $date = $flight->flightDetails[0]->flightInformation->productDateTime->dateOfDeparture;
+          }
+          else
+          {
+            $date = $flight->flightDetails->flightInformation->productDateTime->dateOfDeparture;            
+          }
 	        $dateOfDeparture  = date_create_from_format('dmy',$date);
 
 	        $result->flight[$key] = new \stdClass();/* fix undefined stdObject warning */
