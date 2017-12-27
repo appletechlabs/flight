@@ -23,12 +23,7 @@ class Client
       if (count($data) > 0) {
             if (isset($data['amadeus'])) {
               $this->AmadeusSoap = new AmadeusSoapProvider();
-              $this->AmadeusSoap->officeId = $data['amadeus']['officeId'];
-              $this->AmadeusSoap->userId = $data['amadeus']['userId'];
-              $this->AmadeusSoap->passwordData = $data['amadeus']['passwordData'];
-              $this->AmadeusSoap->wsdl = $data['amadeus']['wsdl'];
-              $this->AmadeusSoap->passwordLength = $data['amadeus']['passwordLength'];
-              $this->AmadeusSoap->receivedFrom = $data['amadeus']['receivedFrom'];
+              $this->AmadeusSoap->setup($data['amadeus']);
             }
         }
   }
@@ -38,9 +33,14 @@ class Client
     return $this->AmadeusSoap;
   }
 
-  public function setup()
+  public function signIn()
   {
-    $this->AmadeusSoap->setup();
+     return $this->AmadeusSoap->securitySignIn();
+  }
+
+  public function signOut()
+  {
+     return $this->AmadeusSoap->securitySignOut();
   }
 
 

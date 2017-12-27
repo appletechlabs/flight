@@ -37,40 +37,50 @@ class AmadeusSoapProvider
 	public $passwordData;
 	public $wsdl;
 	public $passwordLength;
-	public $receivedFrom;
+	public $receivedFrom;  
+  public $params;
   
 	
-	public function setup()
+	public function setup(array $options)
 	{
-		$params = new Params([
-            'returnXml' => false,
-            'authParams' => [
-                'officeId' => $this->officeId,
-                'userId' => $this->userId, 
-                'passwordData' => $this->passwordData, 
-                'passwordLength' => $this->passwordLength,
+    $this->params = new Params([
+        'returnXml' => false,
+        'authParams' => [
+            'officeId' => $options['officeId'],
+            'userId' => $options['userId'], 
+            'passwordData' => $options['passwordData'], 
+            'passwordLength' => $options['passwordLength'],
+        ],
+        'sessionHandlerParams' => [
+            'soapHeaderVersion' => AmadeusClient::HEADER_V4,
+            'wsdl' => $options['wsdl'], 
+            'stateful' => false,
+            'logger' => new NullLogger()
+        ],
+        'requestCreatorParams' => [
+            'receivedFrom' => $options['receivedFrom'] 
+        ]
+    ]);
 
-            ],
-            'sessionHandlerParams' => [
-                'soapHeaderVersion' => AmadeusClient::HEADER_V4,
-                'wsdl' => $this->wsdl, 
-                'stateful' => false,
-                'logger' => new NullLogger()
-            ],
-            'requestCreatorParams' => [
-                'receivedFrom' => $this->receivedFrom 
-            ]
-        ]);
-
-        $this->amadeusClient = new AmadeusClient($params);
-        $this->amadeusClient->securityAuthenticate();
+    
 	}
 
+  public function securitySignIn()
+  {
+    $this->amadeusClient = new AmadeusClient($this->params);
+    $authResult = $this->amadeusClient->securityAuthenticate();
+
+    return $authResult;
+  }
+
+
+ 
 
 
   public function securitySignOut()
   {
-    $this->amadeusClient->securitySignOut();
+    $this->amadeusClient = new AmadeusClient($this->params);
+    return $this->amadeusClient->securitySignOut();
   }
 
   public function getPassengersCount($passengers)
