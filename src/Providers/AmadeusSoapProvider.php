@@ -28,16 +28,12 @@ use Amadeus\Client\RequestOptions\Air\RetrieveSeatMap\FlightInfo;
 use Amadeus\Client\RequestOptions\SalesReportsDisplayQueryReportOptions;
 use Psr\Log\NullLogger;
 
+use appletechlabs\flight\Helpers\Data;
+
 class AmadeusSoapProvider
 {
 	const PROVIDER = "AmadeusSoap";
-
-	public $officeId;
-	public $userId;
-	public $passwordData;
-	public $wsdl;
-	public $passwordLength;
-	public $receivedFrom;  
+ 
   public $params;
   
 	
@@ -176,7 +172,11 @@ class AmadeusSoapProvider
 
   	public function getflightPrice($ref, $recommendations)
 	{
-	    //var_dump($recommendations);
+	    //If Multiple Recommendations (Multiple Pricing)
+     if(!is_array($recommendations))
+     {
+        $recommendations = Data::dataToArray($recommendations);
+     }
 	    foreach ($recommendations as $recommendation) 
 	    {
 	        $segments = $recommendation->segmentFlightRef;
