@@ -102,7 +102,7 @@ class Client
     $result = [];
 
     $result['calendarSearch'] = $rawcalendarResult;
-    $result['fareBoardSearch'] = $rawfmptResult;
+    $result['fareBoardSearch'] =  $this->fareBoardSearchOptimzed($fmptResult);
 
     return $result;
   }
