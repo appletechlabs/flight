@@ -98,11 +98,11 @@ class Client
     $rawResult = $this->fareBoardAndCalendarSearch($Opt,$calendarSearchOpt);
 
     $rawcalendarResult =  $rawResult['calendarSearch'];
-    $rawfmptResult = $rawResult['calendarSearch'];
+    $rawfmptResult = $rawResult['fareBoardSearch'];
     $result = [];
 
     $result['calendarSearch'] = $rawcalendarResult;
-    $result['fareBoardSearch'] =  $this->fareBoardSearchOptimzed($fmptResult);
+    $result['fareBoardSearch'] =  $this->fareBoardSearchOptimzed($rawfmptResult);
 
     return $result;
   }
