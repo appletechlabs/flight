@@ -144,8 +144,8 @@ class AmadeusSoapProvider
   		//var_dump($value['departureLocation']);
   		if (isset($value['rangeMode'])) {
   			$MPItinerary = new MPItinerary([
-                   'departureLocation' => new MPLocation(['city' => $value['departureLocation']]),
-                   'arrivalLocation' => new MPLocation(['city' => $value['arrivalLocation']]),
+                   'departureLocation' => new MPLocation(['airport' => $value['departureLocation']]),
+                   'arrivalLocation' => new MPLocation(['airport' => $value['arrivalLocation']]),
                    'date' => new MPDate([
                        'date' => $value['date'],
                        'rangeMode' => $this->getRangeMode($value['rangeMode']),
@@ -156,8 +156,8 @@ class AmadeusSoapProvider
   		else
   		{
   			$MPItinerary = new MPItinerary([
-                   'departureLocation' => new MPLocation(['city' => $value['departureLocation']]),
-                   'arrivalLocation' => new MPLocation(['city' => $value['arrivalLocation']]),
+                   'departureLocation' => new MPLocation(['airport' => $value['departureLocation']]),
+                   'arrivalLocation' => new MPLocation(['airport' => $value['arrivalLocation']]),
                    'date' => new MPDate([
                        'date' => $value['date'],
                    ])
