@@ -29,6 +29,11 @@ use Amadeus\Client\RequestOptions\SalesReportsDisplayQueryReportOptions;
 use Psr\Log\NullLogger;
 
 use appletechlabs\flight\Helpers\Data;
+use appletechlabs\flight\Recommendations\Recommendation;
+use appletechlabs\flight\Recommendations\fareSummary;
+use appletechlabs\flight\Recommendations\paxFare;
+use appletechlabs\flight\Recommendations\Rules;
+
 
 class AmadeusSoapProvider
 {
@@ -170,7 +175,7 @@ class AmadeusSoapProvider
   }
 
 
-  	public function getflightPrice($ref, $recommendations)
+  public function getflightPrice($ref, $recommendations)
 	{
 	    //If Multiple Recommendations (Multiple Pricing)
      if(!is_array($recommendations))
@@ -339,8 +344,8 @@ class AmadeusSoapProvider
 		$info->stopInfo = "Direct";
 		$airports = [];
 
-		if (is_array($flightDetails)) {
-
+		if (is_array($flightDetails)) 
+    {
 			if (count($flightDetails)-1 == 1) {
 	            $info->stopInfo = (count($flightDetails)-1 ) . " Stop";
 	        }
@@ -349,10 +354,10 @@ class AmadeusSoapProvider
 	        	 $info->stopInfo = (count($flightDetails)-1 ) . " Stops";
 	        }
 
-			foreach ($flightDetails as $flight) {
-
-
-				foreach ($flight->flightInformation->location as $location) {
+			foreach ($flightDetails as $flight) 
+      {
+				foreach ($flight->flightInformation->location as $location) 
+        {
 					if ($location->locationId == end($airports))
 						continue;
 					$airports[] = $location->locationId;
@@ -371,6 +376,64 @@ class AmadeusSoapProvider
 		$info->airports =  $airports;
 		return $info;
 	}
+
+  public function getFlightDetails($flightDetails)
+  {
+    if (!is_array($flightDetails)) {
+      $flightDetails = Data::dataToArray($flightDetails);
+    }
+
+    $results = [];
+
+    foreach ($flightDetails as $flightDetailsKey => $flight) {
+      
+      $info = new \stdClass();
+
+      $depdate = $flight->flightInformation->productDateTime->dateOfDeparture;
+      $deptime = $flight->flightInformation->productDateTime->timeOfDeparture;
+
+      $info->departure['dateTime'] =  date_create_from_format('dmyHi',$depdate.$deptime);
+      $info->departure['airport'] =  $flight->flightInformation->location[0]->locationId;
+      $info->departure['terminal'] =  $flight->flightInformation->location[0]->terminal ?? '';
+
+      $arrdate = $flight->flightInformation->productDateTime->dateOfArrival;
+      $arrtime = $flight->flightInformation->productDateTime->timeOfArrival;
+
+      $info->arrival['dateTime'] =  date_create_from_format('dmyHi',$arrdate.$arrtime);
+      $info->arrival['airport'] =  $flight->flightInformation->location[1]->locationId;
+      $info->arrival['terminal'] =  $flight->flightInformation->location[1]->terminal ?? '';
+
+      if ($flight->flightInformation->attributeDetails->attributeType == 'EFT') 
+      {
+        $info->flyingTime = $flight->flightInformation->attributeDetails->attributeDescription;
+      }
+
+      $info->aircraft = $flight->flightInformation->productDetail->equipmentType;
+      $info->marketingCarrier = $flight->flightInformation->companyId->marketingCarrier;
+
+      if ($flightDetailsKey != 0)
+       {
+           $beforeArrdate = $flightDetails[$flightDetailsKey-1]->flightInformation->productDateTime->dateOfArrival;
+           $beforeArrtime = $flightDetails[$flightDetailsKey-1]->flightInformation->productDateTime->timeOfArrival;
+           $beforeDateOfArrival  = date_create_from_format('dmyHi',$beforeArrdate.$beforeArrtime);
+
+           $beforeDate = $beforeDateOfArrival;
+           $afterDate =  $info->departure['dateTime'];
+           $info->stopOverTime = $beforeDate->diff($afterDate);
+       }
+      
+
+
+      $results[] = $info;
+
+    }
+
+    return $results;
+    
+   
+
+  }
+
 
 	public function optimizeResults($amflightResults)
 	{
@@ -404,6 +467,129 @@ class AmadeusSoapProvider
 
 	   return $result->flight;
 	}
+
+  public function optimizeResults2($amflightResults)
+  {
+    //var_dump($amflightResults);
+    /* This doesn't work with multiple itineray options */
+    /* Todo : array check*/
+
+    $currency = $amflightResults->response->conversionRate->conversionRateDetail->currency;
+
+      $groupOfFlights = $amflightResults->response->flightIndex->groupOfFlights;
+      $recommendations = $amflightResults->response->recommendation;
+      foreach ($groupOfFlights as $key => $flight) 
+      {
+          $propFlightRef = $flight->propFlightGrDetail->flightProposal[0]->ref;
+          $flightPrice = $this->getflightPrice($propFlightRef,$recommendations);
+          $flightDetails = $this->getFlightDetails($flight->flightDetails);
+          $info = $this->optimizeInfo($flight->flightDetails);
+
+          if(!is_array($flightPrice)) 
+          $flightPrice = Data::dataToArray($flightPrice);          
+
+          $majCabin = $this->getCabinDescription($flightPrice[0]->fareDetails->majCabin->bookingClassDetails->designator);
+          $seatstatus = $this->seatStatus($flightPrice[0]->fareDetails->groupOfFares);
+          //$stopInfo =  $this->flightStops($flightDetails);
+
+          $result->flight[$key] = new \stdClass();/* fix undefined stdObject warning */
+          $result->flight[$key]->ref = $propFlightRef;
+          $result->flight[$key]->flightDetails =  $flightDetails;
+          $result->flight[$key]->flightPrice =  $flightPrice;
+          $result->flight[$key]->stopInfo = $info->stopInfo;
+          $result->flight[$key]->airports = $info->airports;
+          $result->flight[$key]->majCabinDesc =  $majCabin;
+          $result->flight[$key]->seatstatus =  $seatstatus;
+
+          if (is_array($flightPrice[0]->paxFareDetail->codeShareDetails)) {
+              foreach ($flightPrice[0]->paxFareDetail->codeShareDetails as $codeShareDetail) {
+                  if (isset($codeShareDetail->transportStageQualifier) && $codeShareDetail->transportStageQualifier == "V") {
+                     $result->flight[$key]->MajAirline  = $codeShareDetail->company;
+                  }
+              }
+          }
+          else
+          {
+             $result->flight[$key]->MajAirline  = $flightPrice[0]->paxFareDetail->codeShareDetails->company;
+          }
+
+          $paxFareList = [];
+
+          foreach ($flightPrice as $flightPriceKey => $flightPriceitem) 
+          {
+
+            $type = $flightPriceitem->paxReference->ptc;
+            $noOfPassengers = count($flightPriceitem->paxReference->traveller);
+           
+            $taxesAndFees = $flightPriceitem->paxFareDetail->totalTaxAmount;
+            $total = $flightPriceitem->paxFareDetail->totalFareAmount;
+            $baseFare = round($total - $taxesAndFees,2);
+
+            $fareRules = $flightPriceitem->fare;
+
+            if(!is_array($fareRules)) 
+            $fareRules = Data::dataToArray($fareRules);   
+
+            $paxFareRules = [];
+
+            foreach ($fareRules as $fareRulekey => $fareRule) {
+              $informationType = $fareRule->pricingMessage->freeTextQualification->informationType;
+              $description = $fareRule->pricingMessage->description;
+              $monetaryDetail = $fareRule->monetaryInformation->monetaryDetail ?? null;
+
+              $paxFareRule = new Rules([
+                 'informationType' => $informationType,
+                 'description' => $description,
+                 'monetaryDetail' => $monetaryDetail,
+              ]);
+
+              $paxFareRules[]= $paxFareRule;
+            
+            }
+
+             $paxFare = new paxFare([
+                'type' => $type,
+                'noOfPassengers' => $noOfPassengers,
+                'baseFare' => $baseFare,
+                'taxesAndFees' => $taxesAndFees,
+                'total' => $total,
+                'paxFareRules' =>$paxFareRules
+            ]);
+
+             $paxFareList[] = $paxFare;
+
+          }
+         
+
+          //   var_dump($currency);
+          // exit();
+
+
+          
+
+          $Recommendation = new Recommendation([
+           'ref' => $propFlightRef,
+           'flightDetails' => $flightDetails,
+           'majCabin' => $majCabin,
+           'majAirline' => $result->flight[$key]->MajAirline,
+           'stopInfo' => $info->stopInfo,
+           'seatAvailability' => $seatstatus,
+           'fareSummary' => new fareSummary([
+                'currency' => $currency,
+                'pax' => $paxFareList
+              ])
+           
+          ]);
+
+          $Recommendations[] = $Recommendation;
+
+         
+          //$result->flight[$key]->stopInfo =  $stopInfo;
+      }
+      return $Recommendations;
+
+     //return $result->flight;
+  }
 
 	public function FareMasterPricerCalendar($opt)
 	{
