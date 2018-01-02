@@ -559,13 +559,8 @@ class AmadeusSoapProvider
              $paxFareList[] = $paxFare;
 
           }
-         
-
           //   var_dump($currency);
-          // exit();
-
-
-          
+          // exit();          
 
           $Recommendation = new Recommendation([
            'ref' => $propFlightRef,
@@ -578,12 +573,10 @@ class AmadeusSoapProvider
            'fareSummary' => new fareSummary([
                 'currency' => $currency,
                 'pax' => $paxFareList
-              ])
-           
+              ])           
           ]);
 
           $Recommendations[] = $Recommendation;
-
          
           //$result->flight[$key]->stopInfo =  $stopInfo;
       }

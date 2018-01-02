@@ -13,6 +13,7 @@ class Recommendation
 	public $majCabin;
 	public $majAirline;	
 	public $stopInfo;
+	public $airports;
 	public $seatAvailability;
 	public $origin;
 	public $destination;
@@ -32,6 +33,7 @@ class Recommendation
 	          $this->majCabin = $data['majCabin'];
 	          $this->majAirline = $data['majAirline'];
 	          $this->stopInfo = $data['stopInfo'];
+	          $this->airports = $data['airports'];
 	          $this->seatAvailability = $data['seatAvailability'];         
 	          $this->fareSummary = $data['fareSummary'];         
 	    	}
