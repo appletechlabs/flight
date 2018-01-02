@@ -573,6 +573,7 @@ class AmadeusSoapProvider
            'majCabin' => $majCabin,
            'majAirline' => $result->flight[$key]->MajAirline,
            'stopInfo' => $info->stopInfo,
+           'airports' => $info->airports,
            'seatAvailability' => $seatstatus,
            'fareSummary' => new fareSummary([
                 'currency' => $currency,
