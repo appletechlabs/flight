@@ -485,9 +485,15 @@ class AmadeusSoapProvider
     //var_dump($amflightResults);
     /* This doesn't work with multiple itineray options */
     /* Todo : array check*/
-
-    $currency = $amflightResults->response->conversionRate->conversionRateDetail->currency;
-
+    if (is_array($amflightResults->response->conversionRate->conversionRateDetail))
+    {
+        $currency = $amflightResults->response->conversionRate->conversionRateDetail[0]->currency;
+    }
+    else
+    {
+        $currency = $amflightResults->response->conversionRate->conversionRateDetail->currency;
+    }
+    
       $groupOfFlights = $amflightResults->response->flightIndex->groupOfFlights;
       $recommendations = $amflightResults->response->recommendation;
       foreach ($groupOfFlights as $key => $flight) 
@@ -609,7 +615,7 @@ class AmadeusSoapProvider
            'nrOfRequestedPassengers' => $opt->nrOfRequestedPassengers,
            'passengers' => $passengers,
            'itinerary' => $itineraries,
-            'currencyOverride' => 'USD'
+            'currencyOverride' => $opt->currencyOverride
        ]);
 
        $fareMPC = $this->amadeusClient->fareMasterPricerCalendar($calendarSearchOpt);
@@ -627,7 +633,7 @@ class AmadeusSoapProvider
         'nrOfRequestedPassengers' => $opt->nrOfRequestedPassengers,
         'passengers' => $passengers,
         'itinerary' => $itineraries,
-         'currencyOverride' => 'USD'
+         'currencyOverride' => $opt->currencyOverride
     ]);
 
     $fareMPTS = $this->amadeusClient->fareMasterPricerTravelBoardSearch($opt);
