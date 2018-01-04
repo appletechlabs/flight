@@ -271,7 +271,7 @@ class AmadeusSoapProvider
 
 	        $result->flight[$key] = new \stdClass();/* fix undefined stdObject warning */
 	        $result->flight[$key]->ref = $propFlightRef;
-	        $result->flight[$key]->dateOfDeparture =  $dateOfDeparture;
+	        $result->flight[$key]->dateOfDeparture =  $dateOfDeparture->format('d-m-y');
 	        $result->flight[$key]->dateMonth =  $dateOfDeparture->format('d M');
 	        $result->flight[$key]->totalFareAmount =  $totalFareAmount;
 	    }
