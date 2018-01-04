@@ -58,7 +58,7 @@ class Client
       }
       else
       {
-        return $calendarResult['result'];       
+        return $calendarResult;       
       }
       
   }
