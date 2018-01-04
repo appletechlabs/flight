@@ -275,6 +275,7 @@ class AmadeusSoapProvider
 	        $result->flight[$key]->dateMonth =  $dateOfDeparture->format('d M');
 	        $result->flight[$key]->totalFareAmount =  $totalFareAmount;
 	    }
+      
 
 	   usort($result->flight,function ($a, $b){
 			    return strtotime($a->dateOfDeparture) - strtotime($b->dateOfDeparture);
