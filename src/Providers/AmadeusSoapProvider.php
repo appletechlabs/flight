@@ -248,6 +248,17 @@ class AmadeusSoapProvider
 	    {
 	        $propFlightRef = $flight->propFlightGrDetail->flightProposal[0]->ref;
 	        $flightPrice = $this->getflightPrice($propFlightRef,$recommendations);
+
+          if(!is_array($flightPrice)) 
+          $flightPrice = Data::dataToArray($flightPrice); 
+
+          $totalFareAmount = 0;
+
+          foreach ($flightPrice as $flightPriceItem) {
+             $totalFareAmount += $flightPriceItem->paxFareDetail->totalFareAmount;
+          }
+
+
           if (is_array($flight->flightDetails)) 
           {
             $date = $flight->flightDetails[0]->flightInformation->productDateTime->dateOfDeparture;
@@ -260,9 +271,9 @@ class AmadeusSoapProvider
 
 	        $result->flight[$key] = new \stdClass();/* fix undefined stdObject warning */
 	        $result->flight[$key]->ref = $propFlightRef;
-	        $result->flight[$key]->dateOfDeparture =  $dateOfDeparture->format('d-m-y');
+	        $result->flight[$key]->dateOfDeparture =  $dateOfDeparture;
 	        $result->flight[$key]->dateMonth =  $dateOfDeparture->format('d M');
-	        $result->flight[$key]->flightPrice =  $flightPrice;
+	        $result->flight[$key]->totalFareAmount =  $totalFareAmount;
 	    }
 
 	   usort($result->flight,function ($a, $b){
@@ -320,7 +331,7 @@ class AmadeusSoapProvider
 	{
 		//var_dump($flightDetails);
 		$stopInfo =  new \stdClass();
-		$stopInfo->stops = "Direct";
+		$stopInfo->stops = "Non-Stop";
     	$stopInfo->TimeDelay = " ";
 
     	if (is_array($flightDetails)) {
@@ -341,7 +352,7 @@ class AmadeusSoapProvider
 	public function optimizeInfo($flightDetails)
 	{
 		$info = new \stdClass();
-		$info->stopInfo = "Direct";
+		$info->stopInfo = "Non-Stop";
 		$airports = [];
 
 		if (is_array($flightDetails)) 

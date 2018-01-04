@@ -48,9 +48,8 @@ class Client
       $calendarResult =  $this->AmadeusSoap->FareMasterPricerCalendar($calendarSearchOpt);
       return $calendarResult;
   }
-  public function FareMasterPricerCalendarSort($calendarSearchOpt)
+  public function FareMasterPricerCalendarSort($calendarResult)
   {
-      $calendarResult =  $this->AmadeusSoap->FareMasterPricerCalendar($calendarSearchOpt);
 
       if ($calendarResult['result']->status == "OK") 
       {
@@ -83,7 +82,7 @@ class Client
 
   public function fareBoardAndCalendarSearch($Opt,$calendarSearchOpt)
   {
-    $calendarResult =  $this->FareMasterPricerCalendarSort($calendarSearchOpt);
+    $calendarResult =  $this->FareMasterPricerCalendar($calendarSearchOpt);
     $fmptResult = $this->FareMasterPricerTravelboardSearch($Opt);
     $result = [];
 
@@ -96,32 +95,31 @@ class Client
   public function fareBoardAndCalendarSearchOptimzed($Opt,$calendarSearchOpt)
   {
     $rawResult = $this->fareBoardAndCalendarSearch($Opt,$calendarSearchOpt);
-
     $rawcalendarResult =  $rawResult['calendarSearch'];
     $rawfmptResult = $rawResult['fareBoardSearch'];
 
-    if ($rawfmptResult['result']->status !== "OK") 
-    {
-        return $rawfmptResult['result'];
-    }
-    elseif ($rawcalendarResult['result']->status !== "OK" ) {
-        return $rawcalendarResult['result'];
+    $result = [];
+    $result['result'] = new \stdClass();
+
+    if ($rawfmptResult['result']->status !== "OK" || $rawcalendarResult['result']->status !== "OK" ) 
+    {       
+      $result['result']->status = 'ERR';
+      if ($rawfmptResult['result']->status !== "OK") {
+        $result['result']->errResponse =  $rawfmptResult['result'];
+      }
+
+      if ($rawcalendarResult['result']->status !== "OK") {
+        $result['result']->errResponse =  $rawcalendarResult['result'];
+      }
     }
     else
     {
-        $result = [];
-
-        $result['calendarSearch'] = $rawcalendarResult;
-        $result['fareBoardSearch'] =  $this->fareBoardSearchOptimzed($rawfmptResult);
-
-        return $result;      
+      $result['result']->status = 'OK';
+      $result['calendarSearch'] = $this->FareMasterPricerCalendarSort($rawcalendarResult);
+      $result['fareBoardSearch'] =  $this->fareBoardSearchOptimzed($rawfmptResult);      
     }
-
-    
+    return $result;
   }
-
-
-
 }
 
 
