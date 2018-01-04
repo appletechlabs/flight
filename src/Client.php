@@ -99,12 +99,25 @@ class Client
 
     $rawcalendarResult =  $rawResult['calendarSearch'];
     $rawfmptResult = $rawResult['fareBoardSearch'];
-    $result = [];
 
-    $result['calendarSearch'] = $rawcalendarResult;
-    $result['fareBoardSearch'] =  $this->fareBoardSearchOptimzed($rawfmptResult);
+    if ($rawfmptResult['result']->status !== "OK") 
+    {
+        return $rawfmptResult['result'];
+    }
+    elseif ($rawcalendarResult['result']->status !== "OK" ) {
+        return $rawcalendarResult['result'];
+    }
+    else
+    {
+        $result = [];
 
-    return $result;
+        $result['calendarSearch'] = $rawcalendarResult;
+        $result['fareBoardSearch'] =  $this->fareBoardSearchOptimzed($rawfmptResult);
+
+        return $result;      
+    }
+
+    
   }
 
 
