@@ -24,7 +24,9 @@
         }
     },
     "require": {
+        "php": ">=7.1.*",
     	"amabnl/amadeus-ws-client": "^1.5"
+
 	},
     "require-dev": {
     	"phpunit/phpunit": "6.4.*"
