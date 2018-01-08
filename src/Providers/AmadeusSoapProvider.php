@@ -577,7 +577,7 @@ class AmadeusSoapProvider
                     ])           
                 ]);
 
-               
+
 
                $Recommendations[] = $Recommendation;
 
@@ -747,6 +747,12 @@ class AmadeusSoapProvider
         'nrOfRequestedPassengers' => $opt->nrOfRequestedPassengers,
         'passengers' => $passengers,
         'itinerary' => $itineraries,
+        'flightOptions' => [
+            FareMasterPricerTbSearch::FLIGHTOPT_PUBLISHED,
+            FareMasterPricerTbSearch::FLIGHTOPT_UNIFARES,
+            FareMasterPricerTbSearch::FLIGHTOPT_NO_SLICE_AND_DICE,
+            "CUC",
+        ],
          'currencyOverride' => $opt->currencyOverride
     ]);
 
