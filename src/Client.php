@@ -72,7 +72,7 @@ class Client
   {
       if ($fmptResult['result']->status == "OK") 
       {
-        return  $this->AmadeusSoap->optimizeResults2($fmptResult['result']);
+        return  $this->AmadeusSoap->optimizeResults($fmptResult['result']);
       }
       else
       {

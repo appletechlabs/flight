@@ -18,6 +18,7 @@ class Recommendation
 	public $origin;
 	public $destination;
 	public $fareSummary;
+	public $provider;
 
 	function __construct($data = [])
 	{
@@ -36,6 +37,7 @@ class Recommendation
 	          $this->airports = $data['airports'];
 	          $this->seatAvailability = $data['seatAvailability'];         
 	          $this->fareSummary = $data['fareSummary'];         
+	          $this->provider = $data['provider'];         
 	    	}
 	  }
 
