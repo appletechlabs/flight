@@ -491,8 +491,7 @@ class AmadeusSoapProvider
       $recommendations = Data::dataToArray($recommendations);
       foreach ($recommendations as $recommendation) 
       {        
-        $totalAmount = $recommendation->recPriceInfo->monetaryDetail[0]->amount;
-        $rateGuaranteed = true;
+       
         $recPriceInfo = Data::dataToArray($recommendation->recPriceInfo->monetaryDetail);
 
         foreach ($recPriceInfo as $recPriceInfoItem) {
@@ -501,6 +500,11 @@ class AmadeusSoapProvider
               $totalAmount = $recPriceInfoItem->amount;
               $rateGuaranteed = false;
               break;
+           }
+           else
+           {
+              $totalAmount = $recPriceInfo[0]->amount;
+              $rateGuaranteed = true;
            }
         }
 
