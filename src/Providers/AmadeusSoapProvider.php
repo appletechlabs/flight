@@ -490,20 +490,19 @@ class AmadeusSoapProvider
        
       $recommendations = Data::dataToArray($recommendations);
       foreach ($recommendations as $recommendation) 
-      {
-         
-         if ($recommendation->recPriceInfo->monetaryDetail && $recommendation->recPriceInfo->monetaryDetail->amountType == "CR") {
-          # Conversion rate not guaranteed results
-            $totalAmount = $recommendation->recPriceInfo->monetaryDetail->amount;
-            $rateGuaranteed = false;
-         }
-         else
-         {
-            $totalAmount = $recommendation->recPriceInfo->monetaryDetail[0]->amount;
-            $rateGuaranteed = true;
-         }
+      {        
+        $totalAmount = $recommendation->recPriceInfo->monetaryDetail[0]->amount;
+        $rateGuaranteed = true;
+        $recPriceInfo = Data::dataToArray($recommendation->recPriceInfo->monetaryDetail);
 
-         
+        foreach ($recPriceInfo as $recPriceInfoItem) {
+            if (isset($recPriceInfoItem->amountType) && $recPriceInfoItem->amountType == "CR") {
+              # Conversion rate not guaranteed results
+              $totalAmount = $recPriceInfoItem->amount;
+              $rateGuaranteed = false;
+              break;
+           }
+        }
 
          # Recommendaton References
         $segmentFlightReferences = Data::dataToArray($recommendation->segmentFlightRef); 
@@ -583,12 +582,12 @@ class AmadeusSoapProvider
                  'stopInfo' => $info->stopInfo,
                  'airports' => $info->airports,
                  'seatAvailability' => $seatstatus,
+                 'rateGuaranteed' => $rateGuaranteed,
                  'provider' => self::PROVIDER,
                  'fareSummary' => new fareSummary([
                       'currency' => $currency,
                       'pax' => $paxFareList,
                       'total' =>  $totalAmount,
-                      'rateGuaranteed' => $rateGuaranteed,
                     ])           
                 ]);
 
