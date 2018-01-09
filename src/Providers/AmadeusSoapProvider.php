@@ -395,7 +395,11 @@ class AmadeusSoapProvider
       $flightDetails = Data::dataToArray($flightDetails);
     }
 
-    $results = [];
+    $results = new \stdClass();
+
+    $results->info = [];
+
+    $totalFlyingTime = new \DateTime('00:0');
 
     foreach ($flightDetails as $flightDetailsKey => $flight) {
       
@@ -432,13 +436,23 @@ class AmadeusSoapProvider
            $beforeDate = $beforeDateOfArrival;
            $afterDate =  $info->departure['dateTime'];
            $info->stopOverTime = $beforeDate->diff($afterDate);
+
+           $totalFlyingTime->add($info->stopOverTime);
        }
+
+
       
+      $flyTimeString = str_split($info->flyingTime, 2);
+      $FlyingTime = new \DateInterval('PT'.$flyTimeString[0].'H'.$flyTimeString[1].'M');
+
+      $totalFlyingTime->add($FlyingTime);
 
 
-      $results[] = $info;
+      $results->info[] = $info;
 
     }
+
+    $results->totalFlyingTime = $totalFlyingTime->format('H:i');
 
     return $results;
     
@@ -576,17 +590,20 @@ class AmadeusSoapProvider
 
                 $flightDetails = $this->getFlightPrposals($referencingDetail->refNumber,$groupOfFlights);
                 $info = $this->optimizeInfo($flightDetails->flightDetails);
+
+                $flightTiming = $this->getFlightDetails($flightDetails->flightDetails);
                
 
                $Recommendation = new Recommendation([
                  'ref' => $referencingDetail->refNumber,
-                 'flightDetails' =>  $this->getFlightDetails($flightDetails->flightDetails),
+                 'flightDetails' =>  $flightTiming->info,
                  'majCabin' => $majCabin,
                  'majAirline' => $flightDetails->MajAirline,
                  'stopInfo' => $info->stopInfo,
                  'airports' => $info->airports,
                  'seatAvailability' => $seatstatus,
                  'rateGuaranteed' => $rateGuaranteed,
+                 'totalFlyingTime' =>  $flightTiming->totalFlyingTime,
                  'provider' => self::PROVIDER,
                  'fareSummary' => new fareSummary([
                       'currency' => $currency,

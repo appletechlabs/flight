@@ -19,6 +19,7 @@ class Recommendation
 	public $destination;
 	public $fareSummary;
 	public $rateGuaranteed;
+	public $totalFlyingTime;
 	public $provider;
 
 	function __construct($data = [])
@@ -39,6 +40,7 @@ class Recommendation
 	          $this->seatAvailability = $data['seatAvailability'];         
 	          $this->fareSummary = $data['fareSummary'];         
 	          $this->rateGuaranteed = $data['rateGuaranteed'];         
+	          $this->totalFlyingTime = $data['totalFlyingTime'];         
 	          $this->provider = $data['provider'];         
 	    	}
 	  }
