@@ -452,7 +452,7 @@ class AmadeusSoapProvider
 
     }
 
-    $results->totalFlyingTime = $totalFlyingTime->format('H:i');
+    $results->totalFlyingTime = $totalFlyingTime;
 
     return $results;
     
