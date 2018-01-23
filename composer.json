@@ -35,5 +35,10 @@
 	    "psr-4": {
 	      "appletechlabs\\flight\\": "src"
 	    }
-	}
+	},
+      "autoload-dev": {
+        "psr-4": {
+          "Test\\flight\\": "tests"
+        }
+    }
 }

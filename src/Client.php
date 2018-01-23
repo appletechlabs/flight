@@ -3,6 +3,7 @@
 namespace appletechlabs\flight;
 
 use appletechlabs\flight\Providers\AmadeusSoapProvider;
+use appletechlabs\flight\Providers\AmadeusSoapProvider\AirSellFromRecommendation;
 
 
 /**
@@ -120,7 +121,18 @@ class Client
     }
     return $result;
   }
+
+  public function SellFromRecommendation($options)
+  {
+
+    $airSellRec = $this->AmadeusSoap->Air_SellFromRecommendation($options);
+    return $airSellRec;
+     
+  }
+
+
 }
+
 
 
 ?>
