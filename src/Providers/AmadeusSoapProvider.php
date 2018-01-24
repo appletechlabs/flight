@@ -426,8 +426,6 @@ class AmadeusSoapProvider
 
     $results->info = [];
 
-    $totalFlyingTime = new \DateTime('00:0');
-
     foreach ($flightDetails as $flightDetailsKey => $flight) {
       
       $info = new \stdClass();
@@ -465,23 +463,12 @@ class AmadeusSoapProvider
            $beforeDate = $beforeDateOfArrival;
            $afterDate =  $info->departure['dateTime'];
            $info->stopOverTime = $beforeDate->diff($afterDate);
-
-           $totalFlyingTime->add($info->stopOverTime);
-       }
-
-
-      
-      $flyTimeString = str_split($info->flyingTime, 2);
-      $FlyingTime = new \DateInterval('PT'.$flyTimeString[0].'H'.$flyTimeString[1].'M');
-
-      $totalFlyingTime->add($FlyingTime);
-
+       }    
 
       $results->info[] = $info;
 
     }
 
-    $results->totalFlyingTime = $totalFlyingTime;
 
     return $results;
     
@@ -507,6 +494,12 @@ class AmadeusSoapProvider
           {
            $result->MajAirline = $flightProposal->ref;
 
+          }
+          if (isset($flightProposal->unitQualifier) && $flightProposal->unitQualifier == "EFT") 
+          {
+            $EFT = str_split($flightProposal->ref, 2);
+            $FlyingTime = new \DateInterval('PT'.$EFT[0].'H'.$EFT[1].'M');
+            $result->EFT = $FlyingTime;
           }
       }
       }
@@ -635,7 +628,7 @@ class AmadeusSoapProvider
                  'airports' => $info->airports,
                  'seatAvailability' =>$cabinProduct->status,
                  'rateGuaranteed' => $rateGuaranteed,
-                 'totalFlyingTime' =>  $flightTiming->totalFlyingTime,
+                 'totalFlyingTime' =>  $flightDetails->EFT,
                  'provider' => self::PROVIDER,
                  'fareSummary' => new fareSummary([
                       'currency' => $currency,
