@@ -5,6 +5,10 @@ namespace appletechlabs\flight\Recommendations;
 
 use appletechlabs\flight\Helpers\Data;
 
+/**
+ * Class Recommendation
+ * @package appletechlabs\flight\Recommendations
+ */
 class Recommendation
 {
 
@@ -22,13 +26,20 @@ class Recommendation
 	public $totalFlyingTime;
 	public $provider;
 
-	function __construct($data = [])
+    /**
+     * Recommendation constructor.
+     * @param array $data
+     */
+    function __construct($data = [])
 	{
 		 $this->loadFromArray($data);
 		 $this->setOriginAndDestination();
 	}
 
-	protected function loadFromArray(array $data)
+    /**
+     * @param array $data
+     */
+    protected function loadFromArray(array $data)
 	  {
 	       if (count($data) > 0) {
 	          $this->ref = $data['ref'];
@@ -60,4 +71,3 @@ class Recommendation
 
 }
 
-?>

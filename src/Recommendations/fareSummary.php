@@ -2,18 +2,29 @@
 
 namespace appletechlabs\flight\Recommendations;
 
+/**
+ * Class fareSummary
+ * @package appletechlabs\flight\Recommendations
+ */
 class fareSummary
 {
 	public $currency;
 	public $total;
 	public $pax;
 
-	function __construct($data = [])
+    /**
+     * fareSummary constructor.
+     * @param array $data
+     */
+    function __construct($data = [])
 	{
 		 $this->loadFromArray($data);
 	}
 
-	protected function loadFromArray(array $data)
+    /**
+     * @param array $data
+     */
+    protected function loadFromArray(array $data)
 	{
 		if (count($data) > 0) {
 			$this->currency =  $data['currency'];
@@ -24,4 +35,3 @@ class fareSummary
 	
 }
 
-?>

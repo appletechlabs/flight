@@ -2,6 +2,10 @@
 
 namespace appletechlabs\flight\Recommendations;
 
+/**
+ * Class paxFare
+ * @package appletechlabs\flight\Recommendations
+ */
 class paxFare
 {
 	public $type;
@@ -11,12 +15,19 @@ class paxFare
 	public $total;
 	public $paxFareRules;
 
-	function __construct($data = [])
+    /**
+     * paxFare constructor.
+     * @param array $data
+     */
+    function __construct($data = [])
 	{
 		 $this->loadFromArray($data);
 	}
 
-	protected function loadFromArray(array $data)
+    /**
+     * @param array $data
+     */
+    protected function loadFromArray(array $data)
 	{
 		if (count($data) > 0) {
 			$this->type =  $data['type'];
@@ -30,4 +41,3 @@ class paxFare
 	}
 }
 
-?>

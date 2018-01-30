@@ -56,14 +56,21 @@ use appletechlabs\flight\Recommendations\Rules;
 use appletechlabs\flight\Providers\AmadeusSoapProvider\AirSellFromRecommendation;
 
 
+/**
+ * Class AmadeusSoapProvider
+ * @package appletechlabs\flight\Providers
+ */
 class AmadeusSoapProvider
 {
 	const PROVIDER = "AmadeusSoap";
  
   public $params;
-  
-	
-	public function setup(array $options)
+
+
+    /**
+     * @param array $options
+     */
+    public function setup(array $options)
 	{
     $this->params = new Params([
         'returnXml' => false,
@@ -87,7 +94,10 @@ class AmadeusSoapProvider
     
 	}
 
-  public function securitySignIn()
+    /**
+     * @return mixed
+     */
+    public function securitySignIn()
   {
     $this->amadeusClient = new AmadeusClient($this->params);
     $authResult = $this->amadeusClient->securityAuthenticate();
@@ -96,16 +106,20 @@ class AmadeusSoapProvider
   }
 
 
- 
-
-
-  public function securitySignOut()
+    /**
+     * @return mixed
+     */
+    public function securitySignOut()
   {
     $this->amadeusClient = new AmadeusClient($this->params);
     return $this->amadeusClient->securitySignOut();
   }
 
-  public function getPassengersCount($passengers)
+    /**
+     * @param $passengers
+     * @return array
+     */
+    public function getPassengersCount($passengers)
   {
 
   	foreach ($passengers as $passenger => $value) {
@@ -141,7 +155,12 @@ class AmadeusSoapProvider
   	return $MPPassengers;
 
   }
-  public function getRangeMode($rangeModeText)
+
+    /**
+     * @param $rangeModeText
+     * @return mixed
+     */
+    public function getRangeMode($rangeModeText)
   {
   	switch ($rangeModeText) {
   		case 'RANGEMODE_MINUS_PLUS':
@@ -162,7 +181,11 @@ class AmadeusSoapProvider
   	}
   }
 
-  public function getItinerarCount($itineraries)
+    /**
+     * @param $itineraries
+     * @return array
+     */
+    public function getItinerarCount($itineraries)
   {
 
   	foreach ($itineraries as $itinerary => $value) {
@@ -196,7 +219,12 @@ class AmadeusSoapProvider
   }
 
 
-  public function getflightPrice($ref, $recommendations)
+    /**
+     * @param $ref
+     * @param $recommendations
+     * @return mixed
+     */
+    public function getflightPrice($ref, $recommendations)
 	{
 	    //If Multiple Recommendations (Multiple Pricing)
      if(!is_array($recommendations))
@@ -258,7 +286,11 @@ class AmadeusSoapProvider
 	    }
 	}
 
-	public function calendarMin($amflightResults)
+    /**
+     * @param $amflightResults
+     * @return mixed
+     */
+    public function calendarMin($amflightResults)
 	{
 		//var_dump($amflightResults->response->flightIndex[0]->groupOfFlights);
 		/* This doesn't work with multiple itineray options */
@@ -304,7 +336,12 @@ class AmadeusSoapProvider
 
 	   return $result->flight;
 	}
-	public function getCabinDescription($majCabin)
+
+    /**
+     * @param $majCabin
+     * @return string
+     */
+    public function getCabinDescription($majCabin)
 	{
 		 switch($majCabin) {
             case 'C':
@@ -327,7 +364,11 @@ class AmadeusSoapProvider
         }
 	}
 
-	public function seatStatus($groupOfFares)
+    /**
+     * @param $groupOfFares
+     * @return \stdClass
+     */
+    public function seatStatus($groupOfFares)
 	{
     $cabinProduct = new \stdClass();
 		$cabinProduct->status = "Seats Available";
@@ -353,7 +394,12 @@ class AmadeusSoapProvider
 	   }
 	   return $cabinProduct;
 	}
-	public function flightStops($flightDetails)
+
+    /**
+     * @param $flightDetails
+     * @return \stdClass
+     */
+    public function flightStops($flightDetails)
 	{
 		//var_dump($flightDetails);
 		$stopInfo =  new \stdClass();
@@ -375,7 +421,11 @@ class AmadeusSoapProvider
     	 return $stopInfo;
 	}
 
-	public function optimizeInfo($flightDetails)
+    /**
+     * @param $flightDetails
+     * @return \stdClass
+     */
+    public function optimizeInfo($flightDetails)
 	{
 		$info = new \stdClass();
 		$info->stopInfo = "Non-Stop";
@@ -414,7 +464,12 @@ class AmadeusSoapProvider
 		return $info;
 	}
 
-  public function getFlightDetails($flightDetails,$class)
+    /**
+     * @param $flightDetails
+     * @param $class
+     * @return \stdClass
+     */
+    public function getFlightDetails($flightDetails, $class)
   {
     if (!is_array($flightDetails)) {
       $flightDetails = Data::dataToArray($flightDetails);
@@ -475,7 +530,14 @@ class AmadeusSoapProvider
    
 
   }
-  public function getFlightPrposals($ref,$groupOfFlights)
+
+    /**
+     * @param $ref
+     * @param $groupOfFlights
+     * @return \stdClass
+     * @throws \Exception
+     */
+    public function getFlightPrposals($ref, $groupOfFlights)
   {
 
     $groupOfFlights = Data::dataToArray($groupOfFlights);
@@ -510,7 +572,12 @@ class AmadeusSoapProvider
   }
 
 
-	public function optimizeResults($amflightResults)
+    /**
+     * @param $amflightResults
+     * @return array
+     * @throws \Exception
+     */
+    public function optimizeResults($amflightResults)
 	{
 		//var_dump($amflightResults);
 		/* This doesn't work with multiple itineray options */
@@ -777,7 +844,11 @@ class AmadeusSoapProvider
   //    //return $result->flight;
   // }
 
-	public function FareMasterPricerCalendar($opt)
+    /**
+     * @param $opt
+     * @return array
+     */
+    public function FareMasterPricerCalendar($opt)
 	{
 
 		$passengers = $this->getPassengersCount($opt->passengers);
@@ -797,7 +868,11 @@ class AmadeusSoapProvider
        'result' => $fareMPC ];
    }
 
-  public function FareMasterPricerTravelboardSearch($opt)
+    /**
+     * @param $opt
+     * @return array
+     */
+    public function FareMasterPricerTravelboardSearch($opt)
   {
   	$passengers = $this->getPassengersCount($opt->passengers);
 	$itineraries = $this->getItinerarCount($opt->itineraries);
@@ -822,7 +897,10 @@ class AmadeusSoapProvider
 
   }
 
-  public function Fare_InformativePricingWithoutPNR()
+    /**
+     * @return mixed
+     */
+    public function Fare_InformativePricingWithoutPNR()
   {
 
     $informativePricingResponse = $this->amadeusClient->fareInformativePricingWithoutPnr(
@@ -851,7 +929,12 @@ class AmadeusSoapProvider
     return $informativePricingResponse;
 
   }
-  public function Air_SellFromRecommendation($options)
+
+    /**
+     * @param $options
+     * @return mixed
+     */
+    public function Air_SellFromRecommendation($options)
   {
      $opt = new AirSellFromRecommendation($options);
 
@@ -861,7 +944,10 @@ class AmadeusSoapProvider
 
   }
 
-public function PNR_AddMultiElements()
+    /**
+     * @return mixed
+     */
+    public function PNR_AddMultiElements()
 {
     $opt = new PnrCreatePnrOptions();
     $opt->actionCode = PnrCreatePnrOptions::ACTION_END_TRANSACT_RETRIEVE; //0 Do not yet save the PNR and keep in context.
@@ -905,7 +991,11 @@ public function PNR_AddMultiElements()
 
     return $createdPnr;
 }
-  public function Air_FlightInfo()
+
+    /**
+     * @return mixed
+     */
+    public function Air_FlightInfo()
   {
     $flightInfo = $this->amadeusClient->airFlightInfo(
         new AirFlightInfoOptions([
@@ -920,7 +1010,10 @@ public function PNR_AddMultiElements()
     return $flightInfo;
   }
 
-public function Air_RetrieveSeatMap()
+    /**
+     * @return mixed
+     */
+    public function Air_RetrieveSeatMap()
 {
   $seatmapInfo = $this->amadeusClient->airRetrieveSeatMap(
         new AirRetrieveSeatMapOptions([
@@ -937,7 +1030,11 @@ public function Air_RetrieveSeatMap()
 }
 
 
-public function PNR_Retrieve($pnr)
+    /**
+     * @param $pnr
+     * @return mixed
+     */
+    public function PNR_Retrieve($pnr)
 {
       $pnrContent = $this->amadeusClient->pnrRetrieve(
              new PnrRetrieveOptions(['recordLocator' => $pnr])
@@ -947,7 +1044,11 @@ public function PNR_Retrieve($pnr)
 }
 
 
-  public function PNR_Cancel($pnr)
+    /**
+     * @param $pnr
+     * @return mixed
+     */
+    public function PNR_Cancel($pnr)
   {
        $cancelReply = $this->amadeusClient->pnrCancel(
              new PnrCancelOptions([
@@ -976,4 +1077,3 @@ public function PNR_Retrieve($pnr)
 
 
 
-?>

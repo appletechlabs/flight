@@ -12,13 +12,20 @@ class CalendarSearch
 	public $passengers;
 	public $itineraries;
 	public $currencyOverride;
-	
-	function __construct($data = [])
+
+    /**
+     * CalendarSearch constructor.
+     * @param array $data
+     */
+    function __construct($data = [])
 	{
 		 $this->loadFromArray($data);
 	}
 
-	protected function loadFromArray(array $data)
+    /**
+     * @param array $data
+     */
+    protected function loadFromArray(array $data)
 	  {
 	       if (count($data) > 0) {
               $this->nrOfRequestedResults = $data['nrOfRequestedResults'];
@@ -33,4 +40,3 @@ class CalendarSearch
 
 }
 
-?>

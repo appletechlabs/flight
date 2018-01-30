@@ -2,13 +2,19 @@
 
 namespace appletechlabs\flight\Helpers;
 
+/**
+ * Class Data
+ * @package appletechlabs\flight\Helpers
+ */
 class Data
 {
 
-	/**
-	 * Convert variables in to Array
-	 */
-	public static function dataToArray($data)
+
+    /**
+     * @param $data
+     * @return array
+     */
+    public static function dataToArray($data)
 	{
 		if(is_array($data))
 		{
@@ -23,6 +29,3 @@ class Data
 
 	}
 }
-
-
-?>

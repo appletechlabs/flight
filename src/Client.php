@@ -7,19 +7,32 @@ use appletechlabs\flight\Providers\AmadeusSoapProvider\AirSellFromRecommendation
 
 
 /**
-* 
-*/
-class Client 
+ * Class Client
+ * @package appletechlabs\flight
+ */
+class Client
 {
 
   public $AmadeusSoap;
-  
-  public function __construct($data = [])
+    /**
+     * @var array
+     */
+    private $data;
+
+    /**
+     * Client constructor.
+     * @param array $data
+     */
+    public function __construct($data = [])
   {
       $this->loadFromArray($data);
+      $this->data = $data;
   }
 
-  protected function loadFromArray(array $data)
+    /**
+     * @param array $data
+     */
+    protected function loadFromArray(array $data)
   {
       if (count($data) > 0) {
             if (isset($data['amadeus'])) {
@@ -34,22 +47,37 @@ class Client
     return $this->AmadeusSoap;
   }
 
-  public function signIn()
+    /**
+     * @return mixed
+     */
+    public function signIn()
   {
      return $this->AmadeusSoap->securitySignIn();
   }
 
-  public function signOut()
+    /**
+     * @return mixed
+     */
+    public function signOut()
   {
      return $this->AmadeusSoap->securitySignOut();
   }
 
-  public function FareMasterPricerCalendar($calendarSearchOpt)
+    /**
+     * @param $calendarSearchOpt
+     * @return mixed
+     */
+    public function FareMasterPricerCalendar($calendarSearchOpt)
   {
       $calendarResult =  $this->AmadeusSoap->FareMasterPricerCalendar($calendarSearchOpt);
       return $calendarResult;
   }
-  public function FareMasterPricerCalendarSort($calendarResult)
+
+    /**
+     * @param $calendarResult
+     * @return mixed
+     */
+    public function FareMasterPricerCalendarSort($calendarResult)
   {
 
       if ($calendarResult['result']->status == "OK") 
@@ -63,13 +91,21 @@ class Client
       
   }
 
-  public function FareMasterPricerTravelboardSearch($Opt)
+    /**
+     * @param $Opt
+     * @return mixed
+     */
+    public function FareMasterPricerTravelboardSearch($Opt)
   {
       $fmptResult = $this->AmadeusSoap->FareMasterPricerTravelboardSearch($Opt);
       return $fmptResult;
   }
 
-  public function fareBoardSearchOptimzed($fmptResult)
+    /**
+     * @param $fmptResult
+     * @return mixed
+     */
+    public function fareBoardSearchOptimzed($fmptResult)
   {
       if ($fmptResult['result']->status == "OK") 
       {
@@ -81,7 +117,12 @@ class Client
       }
   }
 
-  public function fareBoardAndCalendarSearch($Opt,$calendarSearchOpt)
+    /**
+     * @param $Opt
+     * @param $calendarSearchOpt
+     * @return array
+     */
+    public function fareBoardAndCalendarSearch($Opt, $calendarSearchOpt)
   {
     $calendarResult =  $this->FareMasterPricerCalendar($calendarSearchOpt);
     $fmptResult = $this->FareMasterPricerTravelboardSearch($Opt);
@@ -93,7 +134,12 @@ class Client
     return $result;
   }
 
-  public function fareBoardAndCalendarSearchOptimzed($Opt,$calendarSearchOpt)
+    /**
+     * @param $Opt
+     * @param $calendarSearchOpt
+     * @return array
+     */
+    public function fareBoardAndCalendarSearchOptimzed($Opt, $calendarSearchOpt)
   {
     $rawResult = $this->fareBoardAndCalendarSearch($Opt,$calendarSearchOpt);
     $rawcalendarResult =  $rawResult['calendarSearch'];
@@ -122,7 +168,11 @@ class Client
     return $result;
   }
 
-  public function SellFromRecommendation($options)
+    /**
+     * @param $options
+     * @return mixed
+     */
+    public function SellFromRecommendation($options)
   {
 
     $airSellRec = $this->AmadeusSoap->Air_SellFromRecommendation($options);
@@ -135,4 +185,3 @@ class Client
 
 
 
-?>

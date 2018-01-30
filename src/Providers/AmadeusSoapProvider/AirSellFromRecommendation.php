@@ -6,11 +6,19 @@ use Amadeus\Client\RequestOptions\AirSellFromRecommendationOptions;
 use Amadeus\Client\RequestOptions\Air\SellFromRecommendation\Itinerary;
 use Amadeus\Client\RequestOptions\Air\SellFromRecommendation\Segment;
 
+/**
+ * Class AirSellFromRecommendation
+ * @package appletechlabs\flight\Providers\AmadeusSoapProvider
+ */
 class AirSellFromRecommendation
 {
 	public $RecOption;
 
-	public function __construct($itinerary)
+    /**
+     * AirSellFromRecommendation constructor.
+     * @param $itinerary
+     */
+    public function __construct($itinerary)
     {
     	$airSellRecOptions = [];
         foreach ($itinerary as $itinerarykey => $itineraryItem) 
@@ -49,4 +57,3 @@ class AirSellFromRecommendation
 }
 
 
-?>
