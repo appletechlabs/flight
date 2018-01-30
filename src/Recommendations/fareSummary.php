@@ -3,8 +3,7 @@
 namespace appletechlabs\flight\Recommendations;
 
 /**
- * Class fareSummary
- * @package appletechlabs\flight\Recommendations
+ * Class fareSummary.
  */
 class fareSummary
 {
@@ -14,9 +13,10 @@ class fareSummary
 
     /**
      * fareSummary constructor.
+     *
      * @param array $data
      */
-    function __construct($data = [])
+    public function __construct($data = [])
     {
         $this->loadFromArray($data);
     }
@@ -32,6 +32,4 @@ class fareSummary
             $this->total = $data['total'] ?? '';
         }
     }
-
 }
-

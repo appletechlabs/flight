@@ -3,8 +3,7 @@
 namespace appletechlabs\flight\Recommendations;
 
 /**
- * Class paxFare
- * @package appletechlabs\flight\Recommendations
+ * Class paxFare.
  */
 class paxFare
 {
@@ -17,9 +16,10 @@ class paxFare
 
     /**
      * paxFare constructor.
+     *
      * @param array $data
      */
-    function __construct($data = [])
+    public function __construct($data = [])
     {
         $this->loadFromArray($data);
     }
@@ -37,7 +37,5 @@ class paxFare
             $this->total = $data['total'];
             $this->paxFareRules = $data['paxFareRules'];
         }
-
     }
 }
-

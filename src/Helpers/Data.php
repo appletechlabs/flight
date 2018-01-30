@@ -3,15 +3,13 @@
 namespace appletechlabs\flight\Helpers;
 
 /**
- * Class Data
- * @package appletechlabs\flight\Helpers
+ * Class Data.
  */
 class Data
 {
-
-
     /**
      * @param $data
+     *
      * @return array
      */
     public static function dataToArray($data)
@@ -21,8 +19,8 @@ class Data
         } else {
             $result = [];
             $result[] = $data;
+
             return $result;
         }
-
     }
 }

@@ -2,12 +2,8 @@
 
 namespace appletechlabs\flight\Search;
 
-/**
- *
- */
 class FareMasterPricerTbSearch
 {
-
     public $nrOfRequestedResults;
     public $nrOfRequestedPassengers;
     public $passengers;
@@ -16,9 +12,10 @@ class FareMasterPricerTbSearch
 
     /**
      * FareMasterPricerTbSearch constructor.
+     *
      * @param array $data
      */
-    function __construct($data = [])
+    public function __construct($data = [])
     {
         $this->loadFromArray($data);
     }
@@ -34,8 +31,6 @@ class FareMasterPricerTbSearch
             $this->passengers = $data['passengers'];
             $this->itineraries = $data['itineraries'];
             $this->currencyOverride = $data['currencyOverride'];
-
         }
     }
 }
-
