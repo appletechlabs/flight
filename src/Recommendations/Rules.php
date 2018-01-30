@@ -2,28 +2,39 @@
 
 namespace appletechlabs\flight\Recommendations;
 
+/**
+ * Class Rules
+ * @package appletechlabs\flight\Recommendations
+ */
 class Rules
 {
-	public $informationType;	
-	public $description;
-	/* Could be a array*/
-	public $monetaryDetail;
-	/*amountType, amount, currency */
+    public $informationType;
+    public $description;
+    /* Could be a array*/
+    public $monetaryDetail;
+    /*amountType, amount, currency */
 
 
-	function __construct($data = [])
-	{
-		 $this->loadFromArray($data);
-	}
+    /**
+     * Rules constructor.
+     * @param array $data
+     */
+    function __construct($data = [])
+    {
+        $this->loadFromArray($data);
+    }
 
-	protected function loadFromArray(array $data)
-	{
-		if (count($data) > 0) {
-			$this->informationType =  $data['informationType'];
-			$this->description =  $data['description'];
-			$this->monetaryDetail =  $data['monetaryDetail'];
-		}
-	}
+    /**
+     * @param array $data
+     */
+    protected function loadFromArray(array $data)
+    {
+        if (count($data) > 0) {
+            $this->informationType = $data['informationType'];
+            $this->description = $data['description'];
+            $this->monetaryDetail = $data['monetaryDetail'];
+        }
+    }
 
 // 3	Ticket by Fare Basis
 // 4	Manual Manipulation of Taxes
@@ -48,4 +59,3 @@ class Rules
 // SP	SPLIT PNR - DIFFERENT BOOKING CODES REQUIRED FOR LOWEST FARE
 }
 
-?>

@@ -1,7 +1,6 @@
 <?php
 
 
-
 namespace appletechlabs\flight;
 /**
  * LoadParamsFromArray
@@ -16,8 +15,8 @@ namespace appletechlabs\flight;
  */
 class LoadParamsFromArray
 {
-	
-	/**
+
+    /**
      * Construct Request Options object with initialization array
      *
      * @param array $params Initialization parameters
@@ -33,4 +32,3 @@ class LoadParamsFromArray
     }
 }
 
-?>
