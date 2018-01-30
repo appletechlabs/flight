@@ -2,16 +2,13 @@
 
 namespace appletechlabs\flight\Recommendations;
 
-
 use appletechlabs\flight\Helpers\Data;
 
 /**
- * Class Recommendation
- * @package appletechlabs\flight\Recommendations
+ * Class Recommendation.
  */
 class Recommendation
 {
-
     public $ref;
     public $flightDetails;
     public $majCabin;
@@ -28,9 +25,10 @@ class Recommendation
 
     /**
      * Recommendation constructor.
+     *
      * @param array $data
      */
-    function __construct($data = [])
+    public function __construct($data = [])
     {
         $this->loadFromArray($data);
         $this->setOriginAndDestination();
@@ -67,6 +65,4 @@ class Recommendation
         $this->origin = $flightDetails[$start]->departure;
         $this->destination = $flightDetails[$end]->arrival;
     }
-
 }
-

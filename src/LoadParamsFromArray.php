@@ -1,23 +1,21 @@
 <?php
 
-
 namespace appletechlabs\flight;
+
 /**
- * LoadParamsFromArray
+ * LoadParamsFromArray.
  *
  * Povides the ability to load parameters in the constructor through an associative array
  *
  * The keys in the associative array should be property names, and if that matches, the values will be set
  * to those properties.
  *
- * @package flight
  * @author Arosha De Silva <aroshajayasanka@gmail.com>
  */
 class LoadParamsFromArray
 {
-
     /**
-     * Construct Request Options object with initialization array
+     * Construct Request Options object with initialization array.
      *
      * @param array $params Initialization parameters
      */
@@ -31,4 +29,3 @@ class LoadParamsFromArray
         }
     }
 }
-

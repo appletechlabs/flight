@@ -2,13 +2,12 @@
 
 namespace appletechlabs\flight\Providers\AmadeusSoapProvider;
 
-use Amadeus\Client\RequestOptions\AirSellFromRecommendationOptions;
 use Amadeus\Client\RequestOptions\Air\SellFromRecommendation\Itinerary;
 use Amadeus\Client\RequestOptions\Air\SellFromRecommendation\Segment;
+use Amadeus\Client\RequestOptions\AirSellFromRecommendationOptions;
 
 /**
- * Class AirSellFromRecommendation
- * @package appletechlabs\flight\Providers\AmadeusSoapProvider
+ * Class AirSellFromRecommendation.
  */
 class AirSellFromRecommendation
 {
@@ -16,6 +15,7 @@ class AirSellFromRecommendation
 
     /**
      * AirSellFromRecommendation constructor.
+     *
      * @param $itinerary
      */
     public function __construct($itinerary)
@@ -30,16 +30,15 @@ class AirSellFromRecommendation
             $newSegments = [];
 
             foreach ($itineraryItem['segments'] as $segment) {
-
                 $newSegment = new Segment([
-                    'departureDate' => $segment['departureDate'],
-                    'from' => $segment['from'],
-                    'to' => $segment['to'],
-                    'companyCode' => $segment['companyCode'],
-                    'flightNumber' => $segment['flightNumber'],
-                    'bookingClass' => $segment['bookingClass'],
+                    'departureDate'  => $segment['departureDate'],
+                    'from'           => $segment['from'],
+                    'to'             => $segment['to'],
+                    'companyCode'    => $segment['companyCode'],
+                    'flightNumber'   => $segment['flightNumber'],
+                    'bookingClass'   => $segment['bookingClass'],
                     'nrOfPassengers' => $segment['nrOfPassengers'],
-                    'statusCode' => Segment::STATUS_SELL_SEGMENT
+                    'statusCode'     => Segment::STATUS_SELL_SEGMENT,
                 ]);
 
                 $newSegments[] = $newSegment;
@@ -50,8 +49,4 @@ class AirSellFromRecommendation
         }
         $this->RecOption = new AirSellFromRecommendationOptions($airSellRecOptions);
     }
-
-
 }
-
-

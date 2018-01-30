@@ -2,7 +2,6 @@
 
 namespace appletechlabs\flight\Search;
 
-
 class CalendarSearch
 {
     public $nrOfRequestedResults;
@@ -13,9 +12,10 @@ class CalendarSearch
 
     /**
      * CalendarSearch constructor.
+     *
      * @param array $data
      */
-    function __construct($data = [])
+    public function __construct($data = [])
     {
         $this->loadFromArray($data);
     }
@@ -31,10 +31,6 @@ class CalendarSearch
             $this->passengers = $data['passengers'];
             $this->itineraries = $data['itineraries'];
             $this->currencyOverride = $data['currencyOverride'];
-
         }
     }
-
-
 }
-

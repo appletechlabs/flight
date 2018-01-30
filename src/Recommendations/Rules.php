@@ -3,8 +3,7 @@
 namespace appletechlabs\flight\Recommendations;
 
 /**
- * Class Rules
- * @package appletechlabs\flight\Recommendations
+ * Class Rules.
  */
 class Rules
 {
@@ -14,12 +13,12 @@ class Rules
     public $monetaryDetail;
     /*amountType, amount, currency */
 
-
     /**
      * Rules constructor.
+     *
      * @param array $data
      */
-    function __construct($data = [])
+    public function __construct($data = [])
     {
         $this->loadFromArray($data);
     }
@@ -36,7 +35,7 @@ class Rules
         }
     }
 
-// 3	Ticket by Fare Basis
+    // 3	Ticket by Fare Basis
 // 4	Manual Manipulation of Taxes
 // 40	LAST TKT DTE - SEE ADV PURCHASE
 // 41	LAST TKT DTE - DATE OF ORIGIN
@@ -58,4 +57,3 @@ class Rules
 // 80	E-TICKET NOT PERMITTED
 // SP	SPLIT PNR - DIFFERENT BOOKING CODES REQUIRED FOR LOWEST FARE
 }
-
