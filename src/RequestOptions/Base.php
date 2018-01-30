@@ -11,7 +11,7 @@ use appletechlabs\flight\LoadParamsFromArray;
  */
 abstract class Base extends LoadParamsFromArray
 {
-	
+
 }
 
 

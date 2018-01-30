@@ -8,11 +8,11 @@ namespace appletechlabs\flight\Recommendations;
  */
 class Rules
 {
-	public $informationType;	
-	public $description;
-	/* Could be a array*/
-	public $monetaryDetail;
-	/*amountType, amount, currency */
+    public $informationType;
+    public $description;
+    /* Could be a array*/
+    public $monetaryDetail;
+    /*amountType, amount, currency */
 
 
     /**
@@ -20,21 +20,21 @@ class Rules
      * @param array $data
      */
     function __construct($data = [])
-	{
-		 $this->loadFromArray($data);
-	}
+    {
+        $this->loadFromArray($data);
+    }
 
     /**
      * @param array $data
      */
     protected function loadFromArray(array $data)
-	{
-		if (count($data) > 0) {
-			$this->informationType =  $data['informationType'];
-			$this->description =  $data['description'];
-			$this->monetaryDetail =  $data['monetaryDetail'];
-		}
-	}
+    {
+        if (count($data) > 0) {
+            $this->informationType = $data['informationType'];
+            $this->description = $data['description'];
+            $this->monetaryDetail = $data['monetaryDetail'];
+        }
+    }
 
 // 3	Ticket by Fare Basis
 // 4	Manual Manipulation of Taxes
