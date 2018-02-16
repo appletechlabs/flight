@@ -4,28 +4,27 @@ namespace appletechlabs\flight\Recommendations;
 
 class Rules
 {
-	public $informationType;	
-	public $description;
-	/* Could be a array*/
-	public $monetaryDetail;
-	/*amountType, amount, currency */
+    public $informationType;
+    public $description;
+    /* Could be a array*/
+    public $monetaryDetail;
+    /*amountType, amount, currency */
 
+    public function __construct($data = [])
+    {
+        $this->loadFromArray($data);
+    }
 
-	function __construct($data = [])
-	{
-		 $this->loadFromArray($data);
-	}
+    protected function loadFromArray(array $data)
+    {
+        if (count($data) > 0) {
+            $this->informationType = $data['informationType'];
+            $this->description = $data['description'];
+            $this->monetaryDetail = $data['monetaryDetail'];
+        }
+    }
 
-	protected function loadFromArray(array $data)
-	{
-		if (count($data) > 0) {
-			$this->informationType =  $data['informationType'];
-			$this->description =  $data['description'];
-			$this->monetaryDetail =  $data['monetaryDetail'];
-		}
-	}
-
-// 3	Ticket by Fare Basis
+    // 3	Ticket by Fare Basis
 // 4	Manual Manipulation of Taxes
 // 40	LAST TKT DTE - SEE ADV PURCHASE
 // 41	LAST TKT DTE - DATE OF ORIGIN
@@ -47,5 +46,3 @@ class Rules
 // 80	E-TICKET NOT PERMITTED
 // SP	SPLIT PNR - DIFFERENT BOOKING CODES REQUIRED FOR LOWEST FARE
 }
-
-?>
