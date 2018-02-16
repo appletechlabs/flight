@@ -129,6 +129,74 @@ class Client
     return $airSellRec;
      
   }
+  public function PNR_AddMultiElements($itinerary,$contactInfo)
+  {
+      return $this->AmadeusSoap->PNR_AddMultiElements($itinerary,$contactInfo);
+  }
+
+  public function PNR_Retrieve($pnr)
+  {
+    return $this->AmadeusSoap->PNR_Retrieve($pnr);
+  }
+
+  public function FarePricePnrWithBookingClass($validatingCarrier)
+  {
+    return $this->AmadeusSoap->FarePricePnrWithBookingClassOptions($validatingCarrier);
+  }
+
+  public function createTSTFromPricing()
+  {
+    return $this->AmadeusSoap->createTSTFromPricing();
+  }
+
+  public function PNR_AddMultiElementsEnd()
+  {
+      return $this->AmadeusSoap->PNR_AddMultiElementsEnd();
+  }
+
+  public function docIssuance()
+  {
+      return $this->AmadeusSoap->docIssuance();
+  }
+
+  
+
+  public function getAllPnr()
+  {
+    return $this->AmadeusSoap->PNR_Retrieve_By_Office();
+  }
+
+  public function PNR_Cancel($pnr)
+  {
+    return $this->AmadeusSoap->PNR_Cancel($pnr);
+  }
+
+  public function getLastRequest()
+  {
+    return $this->AmadeusSoap->getLastRequest();
+  }
+
+  
+
+  public function getLastResponse()
+  {
+    return $this->AmadeusSoap->getLastResponse();
+  }
+  
+
+  public function getLastRequestHeaders()
+  {
+    return $this->AmadeusSoap->getLastRequestHeaders();
+  }
+  
+
+  public function getLastResponseHeaders()
+  {
+    return $this->AmadeusSoap->getLastResponseHeaders();
+  }
+
+
+
 
 
 }

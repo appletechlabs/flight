@@ -28,14 +28,14 @@ use Amadeus\Client\RequestOptions\AirSellFromRecommendationOptions;
 use Amadeus\Client\RequestOptions\Air\SellFromRecommendation\Itinerary;
 use Amadeus\Client\RequestOptions\Air\SellFromRecommendation\Segment as AirsellSegment;
 
-use Amadeus\Client\RequestOptions\PnrCreatePnrOptions;
-use Amadeus\Client\RequestOptions\Pnr\Traveller;
-use Amadeus\Client\RequestOptions\Pnr\Itinerary as PnrItinerary;
-use Amadeus\Client\RequestOptions\Pnr\Segment as PnrSegment;
-use Amadeus\Client\RequestOptions\Pnr\Segment\Miscellaneous;
-use Amadeus\Client\RequestOptions\Pnr\Element\Ticketing;
-use Amadeus\Client\RequestOptions\Pnr\Element\Contact;
-use Amadeus\Client\RequestOptions\Pnr\Segment\Air;
+// use Amadeus\Client\RequestOptions\PnrCreatePnrOptions;
+// use Amadeus\Client\RequestOptions\Pnr\Traveller;
+// use Amadeus\Client\RequestOptions\Pnr\Itinerary as PnrItinerary;
+// use Amadeus\Client\RequestOptions\Pnr\Segment as PnrSegment;
+// use Amadeus\Client\RequestOptions\Pnr\Segment\Miscellaneous;
+// use Amadeus\Client\RequestOptions\Pnr\Element\Ticketing;
+// use Amadeus\Client\RequestOptions\Pnr\Element\Contact;
+// use Amadeus\Client\RequestOptions\Pnr\Segment\Air;
 
 use Amadeus\Client\RequestOptions\PnrAddMultiElementsOptions;
 
@@ -55,6 +55,14 @@ use appletechlabs\flight\Recommendations\Rules;
 
 use appletechlabs\flight\Providers\AmadeusSoapProvider\AirSellFromRecommendation;
 
+use appletechlabs\flight\Providers\AmadeusSoapProvider\PNR_AddMultiElements;
+
+use Amadeus\Client\RequestOptions\FarePricePnrWithBookingClassOptions;
+
+use Amadeus\Client\RequestOptions\TicketCreateTstFromPricingOptions;
+use Amadeus\Client\RequestOptions\Ticket\Pricing;
+
+use Amadeus\Client\RequestOptions\DocIssuanceIssueTicketOptions;
 
 class AmadeusSoapProvider
 {
@@ -76,7 +84,7 @@ class AmadeusSoapProvider
         'sessionHandlerParams' => [
             'soapHeaderVersion' => AmadeusClient::HEADER_V4,
             'wsdl' => $options['wsdl'], 
-            'stateful' => false,
+            'stateful' =>$options['stateful'],
             'logger' => new NullLogger()
         ],
         'requestCreatorParams' => [
@@ -654,128 +662,6 @@ class AmadeusSoapProvider
 	    return $Recommendations;
 	}
 
-  // public function optimizeResults2($amflightResults)
-  // {
-  //   //var_dump($amflightResults);
-  //   /* This doesn't work with multiple itineray options */
-  //   /* Todo : array check*/
-  //   if (is_array($amflightResults->response->conversionRate->conversionRateDetail))
-  //   {
-  //       $currency = $amflightResults->response->conversionRate->conversionRateDetail[0]->currency;
-  //   }
-  //   else
-  //   {
-  //       $currency = $amflightResults->response->conversionRate->conversionRateDetail->currency;
-  //   }
-    
-  //     $groupOfFlights = $amflightResults->response->flightIndex->groupOfFlights;
-  //     $recommendations = $amflightResults->response->recommendation;
-  //     foreach ($groupOfFlights as $key => $flight) 
-  //     {
-  //         $propFlightRef = $flight->propFlightGrDetail->flightProposal[0]->ref;
-  //         $flightPrice = $this->getflightPrice($propFlightRef,$recommendations);
-  //         $flightDetails = $this->getFlightDetails($flight->flightDetails);
-  //         $info = $this->optimizeInfo($flight->flightDetails);
-
-  //         if(!is_array($flightPrice)) 
-  //         $flightPrice = Data::dataToArray($flightPrice);          
-
-  //         $majCabin = $this->getCabinDescription($flightPrice[0]->fareDetails->majCabin->bookingClassDetails->designator);
-  //         $cabinProduct = $this->seatStatus($flightPrice[0]->fareDetails->groupOfFares);
-  //         //$stopInfo =  $this->flightStops($flightDetails);
-
-  //         $result->flight[$key] = new \stdClass();/* fix undefined stdObject warning */
-  //         $result->flight[$key]->ref = $propFlightRef;
-  //         $result->flight[$key]->flightDetails =  $flightDetails;
-  //         $result->flight[$key]->flightPrice =  $flightPrice;
-  //         $result->flight[$key]->stopInfo = $info->stopInfo;
-  //         $result->flight[$key]->airports = $info->airports;
-  //         $result->flight[$key]->majCabinDesc =  $majCabin;
-  //         $result->flight[$key]->seatstatus =  $seatstatus;
-
-  //         if (is_array($flightPrice[0]->paxFareDetail->codeShareDetails)) {
-  //             foreach ($flightPrice[0]->paxFareDetail->codeShareDetails as $codeShareDetail) {
-  //                 if (isset($codeShareDetail->transportStageQualifier) && $codeShareDetail->transportStageQualifier == "V") {
-  //                    $result->flight[$key]->MajAirline  = $codeShareDetail->company;
-  //                 }
-  //             }
-  //         }
-  //         else
-  //         {
-  //            $result->flight[$key]->MajAirline  = $flightPrice[0]->paxFareDetail->codeShareDetails->company;
-  //         }
-
-  //         $paxFareList = [];
-
-  //         foreach ($flightPrice as $flightPriceKey => $flightPriceitem) 
-  //         {
-
-  //           $type = $flightPriceitem->paxReference->ptc;
-  //           $noOfPassengers = count($flightPriceitem->paxReference->traveller);
-           
-  //           $taxesAndFees = $flightPriceitem->paxFareDetail->totalTaxAmount;
-  //           $total = $flightPriceitem->paxFareDetail->totalFareAmount;
-  //           $baseFare = round($total - $taxesAndFees,2);
-
-  //           $fareRules = $flightPriceitem->fare ?? null;
-
-  //           if(!is_array($fareRules)) 
-  //           $fareRules = Data::dataToArray($fareRules);   
-
-  //           $paxFareRules = [];
-
-  //           foreach ($fareRules as $fareRulekey => $fareRule) {
-  //             $informationType = $fareRule->pricingMessage->freeTextQualification->informationType;
-  //             $description = $fareRule->pricingMessage->description;
-  //             $monetaryDetail = $fareRule->monetaryInformation->monetaryDetail ?? null;
-
-  //             $paxFareRule = new Rules([
-  //                'informationType' => $informationType,
-  //                'description' => $description,
-  //                'monetaryDetail' => $monetaryDetail,
-  //             ]);
-
-  //             $paxFareRules[]= $paxFareRule;
-            
-  //           }
-
-  //            $paxFare = new paxFare([
-  //               'type' => $type,
-  //               'noOfPassengers' => $noOfPassengers,
-  //               'baseFare' => $baseFare,
-  //               'taxesAndFees' => $taxesAndFees,
-  //               'total' => $total,
-  //               'paxFareRules' =>$paxFareRules
-  //           ]);
-
-  //            $paxFareList[] = $paxFare;
-
-  //         }
-  //         //   var_dump($currency);
-  //         // exit();          
-
-  //         $Recommendation = new Recommendation([
-  //          'ref' => $propFlightRef,
-  //          'flightDetails' => $flightDetails,
-  //          'majCabin' => $majCabin,
-  //          'majAirline' => $result->flight[$key]->MajAirline,
-  //          'stopInfo' => $info->stopInfo,
-  //          'airports' => $info->airports,
-  //          'seatAvailability' => $cabinProduct->status,
-  //          'fareSummary' => new fareSummary([
-  //               'currency' => $currency,
-  //               'pax' => $paxFareList
-  //             ])           
-  //         ]);
-
-  //         $Recommendations[] = $Recommendation;
-         
-  //         //$result->flight[$key]->stopInfo =  $stopInfo;
-  //     }
-  //     return $Recommendations;
-
-  //    //return $result->flight;
-  // }
 
 	public function FareMasterPricerCalendar($opt)
 	{
@@ -861,41 +747,11 @@ class AmadeusSoapProvider
 
   }
 
-public function PNR_AddMultiElements()
+public function PNR_AddMultiElements($itinerary,$contactInfo)
 {
-    $opt = new PnrCreatePnrOptions();
-    $opt->actionCode = PnrCreatePnrOptions::ACTION_END_TRANSACT_RETRIEVE; //0 Do not yet save the PNR and keep in context.
-    $opt->travellers[] = new Traveller([
-        'number' => 1,
-        'firstName' => 'THUIYA HENNADIGE',
-        'lastName' => 'AROSHA JAYASANKA DE SILVA',
-        'dateOfBirth' => \DateTime::createFromFormat('Y-m-d H:i:s', "1990-05-20 00:15:00", new \DateTimeZone('UTC'))
-    ]);
-    $opt->itineraries[] = new PnrItinerary([
-            'origin' => 'CMB',
-            'destination' => 'SIN',
-            'segments' => [
-                new Air([
-                    'date' => \DateTime::createFromFormat('Y-m-d H:i:s', "2018-02-20 00:15:00", new \DateTimeZone('UTC')),
-                    'origin' => 'CMB',
-                    'destination' => 'KUL',
-                    'flightNumber' => '178',
-                    'bookingClass' => 'N',
-                    'company' => 'MH'
-                ])
-        ]
-    ]);
-    $opt->elements[] = new Ticketing([
-        'ticketMode' => Ticketing::TICKETMODE_OK
-    ]);
-    $opt->elements[] = new Contact([
-        'type' => Contact::TYPE_PHONE_MOBILE,
-        'value' => '+94765411990'
-    ]);
+    $PnrAddOpt = new PNR_AddMultiElements($itinerary,$contactInfo);
 
-    //The required Received From (RF) element will automatically be added by the library if you didn't provide one.
-
-    $createdPnr = $this->amadeusClient->pnrCreatePnr($opt);
+    $createdPnr = $this->amadeusClient->pnrCreatePnr($PnrAddOpt->opt);
 
     // $pnrReply = $this->amadeusClient->pnrAddMultiElements(
     //     new PnrAddMultiElementsOptions([
@@ -905,6 +761,52 @@ public function PNR_AddMultiElements()
 
     return $createdPnr;
 }
+public function addFormOfPayment()
+{
+  # code...
+}
+public function PNR_AddMultiElementsEnd()
+{
+
+    $pnrReply =  $this->amadeusClient->pnrAddMultiElements(
+        new PnrAddMultiElementsOptions([
+            'actionCode' => [
+              PnrAddMultiElementsOptions::ACTION_END_TRANSACT_RETRIEVE, //ET: END AND RETRIEVE
+              PnrAddMultiElementsOptions::ACTION_WARNING_AT_EOT //30
+            ]
+        ])
+    );
+
+    return $pnrReply;
+}
+
+public function createTSTFromPricing()
+{
+    $createTstResponse = $this->amadeusClient->ticketCreateTSTFromPricing(
+      new TicketCreateTstFromPricingOptions([
+          'pricings' => [
+              new Pricing([
+                  'tstNumber' => 1
+              ])
+          ]
+      ])
+    );
+
+    return $createTstResponse;
+}
+
+  public function docIssuance()
+  {
+    $issueTicketResponse = $this->amadeusClient->docIssuanceIssueTicket(
+          new DocIssuanceIssueTicketOptions([
+              'options' => [
+                  DocIssuanceIssueTicketOptions::OPTION_ETICKET
+              ]
+          ])
+      );
+
+    return $issueTicketResponse;
+  }
   public function Air_FlightInfo()
   {
     $flightInfo = $this->amadeusClient->airFlightInfo(
@@ -946,6 +848,15 @@ public function PNR_Retrieve($pnr)
       return $pnrContent;
 }
 
+public function PNR_Retrieve_By_Office()
+{
+      $pnrContent = $this->amadeusClient->pnrRetrieve(
+             new PnrRetrieveOptions(['officeId' => 'CMBI228AR',
+    'lastName' => 'AROSHA JAYASANKA DE SILVA'])
+      );
+
+      return $pnrContent;
+}
 
   public function PNR_Cancel($pnr)
   {
@@ -959,9 +870,39 @@ public function PNR_Retrieve($pnr)
         return $cancelReply;
   }
 
-  public function FarePricePnrWithBookingClassOptions()
+  public function getLastRequest()
   {
-    # code...
+    return $this->amadeusClient->getLastRequest();
+  }
+
+  public function getLastResponse()
+  {
+    return $this->amadeusClient->getLastResponse();
+  }
+
+  public function getLastRequestHeaders()
+  {
+    return $this->amadeusClient->getLastRequestHeaders();
+  }
+
+  public function getLastResponseHeaders()
+  {
+    return $this->amadeusClient->getLastResponseHeaders();
+  }
+
+  public function FarePricePnrWithBookingClassOptions($validatingCarrier)
+  {
+    $pricingResponse = $this->amadeusClient->farePricePnrWithBookingClass(
+        new FarePricePnrWithBookingClassOptions([
+            'overrideOptions' => [
+                FarePricePnrWithBookingClassOptions::OVERRIDE_FARETYPE_PUB,
+                FarePricePnrWithBookingClassOptions::OVERRIDE_FARETYPE_UNI,
+                FarePricePnrWithBookingClassOptions::OVERRIDE_RETURN_LOWEST
+            ]
+        ])
+    );
+
+    return $pricingResponse;
   }
 
 
