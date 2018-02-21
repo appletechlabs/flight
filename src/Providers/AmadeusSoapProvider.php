@@ -43,6 +43,9 @@ use appletechlabs\flight\Recommendations\Recommendation;
 use appletechlabs\flight\Recommendations\Rules;
 use Psr\Log\NullLogger;
 
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+
 class AmadeusSoapProvider
 {
     const PROVIDER = 'AmadeusSoap';
@@ -51,6 +54,9 @@ class AmadeusSoapProvider
 
     public function setup(array $options)
     {
+        $msgLog = new Logger('RequestResponseLogs');
+        $msgLog->pushHandler(new StreamHandler('logs/requestresponse.log', Logger::INFO));
+
         $this->params = new Params([
         'returnXml'  => false,
         'authParams' => [
@@ -63,7 +69,7 @@ class AmadeusSoapProvider
             'soapHeaderVersion' => AmadeusClient::HEADER_V4,
             'wsdl'              => $options['wsdl'],
             'stateful'          => $options['stateful'],
-            'logger'            => new NullLogger(),
+            'logger'            => $msgLog,
         ],
         'requestCreatorParams' => [
             'receivedFrom' => $options['receivedFrom'],

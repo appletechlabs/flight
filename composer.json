@@ -25,7 +25,8 @@
     },
     "require": {
         "php": ">=7.1",
-    	"amabnl/amadeus-ws-client": "^1.5"
+    	"amabnl/amadeus-ws-client": "^1.5",
+        "monolog/monolog": "^1.23"
 
 	},
     "require-dev": {
