@@ -440,17 +440,38 @@ class AmadeusSoapProvider
 
         return $result;
     }
+/**
+ * Get Currency Type
+ * @param array $conversionRateDetail 
+ * @return string $currency
+ */
+public function getCurrencyType($conversionRateDetail)
+{
+    $currency = "";
+    if (is_array($conversionRateDetail))
+    {
+        $currency = $conversionRateDetail[0]->currency;
+    }
+    else 
+    {
+        $currency = $conversionRateDetail->currency;
+    }
+    return $currency;
+}
 
+/**
+ * Optimize Amadeus Results for Flights With One Way
+ * @param array $amflightResults 
+ * @return Result
+ */
     public function optimizeResults($amflightResults)
     {
         //var_dump($amflightResults);
         /* This doesn't work with multiple itineray options */
         /* Todo : array check*/
-        if (is_array($amflightResults->response->conversionRate->conversionRateDetail)) {
-            $currency = $amflightResults->response->conversionRate->conversionRateDetail[0]->currency;
-        } else {
-            $currency = $amflightResults->response->conversionRate->conversionRateDetail->currency;
-        }
+
+        $currency = $this->getCurrencyType($amflightResults->response->conversionRate->conversionRateDetail);
+        
 
         $groupOfFlights = $amflightResults->response->flightIndex->groupOfFlights;
         $recommendations = $amflightResults->response->recommendation;
@@ -560,6 +581,72 @@ class AmadeusSoapProvider
         return $Recommendations;
     }
 
+/**
+ * Optimize Amadeus Results for Flights With Return Type
+ * @param array $amflightResults 
+ * @return Result
+ */
+    public function optimizeResultsReturn($amflightResults)
+    {
+        //var_dump($amflightResults);
+        $currency = $this->getCurrencyType($amflightResults->response->conversionRate->conversionRateDetail);
+
+        $flightSegments = $amflightResults->response->flightIndex;
+        $recommendations = $amflightResults->response->recommendation;
+
+        foreach ($recommendations as $recommendation) {
+
+            $recPriceInfo = Data::dataToArray($recommendation->recPriceInfo->monetaryDetail);
+
+            foreach ($recPriceInfo as $recPriceInfoItem) {
+                if (isset($recPriceInfoItem->amountType) && $recPriceInfoItem->amountType == 'CR') {
+                    /* Conversion rate not guaranteed results */
+                    $totalAmount = $recPriceInfoItem->amount;
+                    $rateGuaranteed = false;
+                    break;
+                } else {
+                    $totalAmount = $recPriceInfo[0]->amount;
+                    $rateGuaranteed = true;
+                }
+            }
+
+            /* Recommendaton References */
+            $segmentFlightReferences = Data::dataToArray($recommendation->segmentFlightRef);
+            $result = new \stdClass();
+            foreach ($segmentFlightReferences as $segmentFlightRef) {
+                /* Flight Proposals and Currency Conversions */
+                $referencingDetails = Data::dataToArray($segmentFlightRef->referencingDetail);
+                foreach ($referencingDetails as $referencingDetailKey => $referencingDetail) {  
+                    /* Get Only Segment refrernces from refQualifier = S */
+                    if ($referencingDetail->refQualifier == 'S') {
+
+                        $result->segmentFlightRef[] = $referencingDetail;
+
+                        $flightPrice = Data::dataToArray($recommendation->paxFareProduct);
+
+                        $majCabin = [];
+
+                        foreach ($flightPrice[0]->fareDetails as $fareDetails) {
+                            $majCabin[] = $this->getCabinDescription($fareDetails->majCabin->bookingClassDetails->designator);
+                        }
+
+                        $result->$majCabin;
+                        
+
+                    }
+                }
+
+                
+
+            }
+
+            $results[] = $result;
+
+        }
+
+        return $results;
+    }
+
     public function FareMasterPricerCalendar($opt)
     {
         $passengers = $this->getPassengersCount($opt->passengers);
@@ -586,18 +673,18 @@ class AmadeusSoapProvider
         $itineraries = $this->getItinerarCount($opt->itineraries);
 
         $opt = new FareMasterPricerTbSearch([
-        'nrOfRequestedResults'    => $opt->nrOfRequestedResults,
-        'nrOfRequestedPassengers' => $opt->nrOfRequestedPassengers,
-        'passengers'              => $passengers,
-        'itinerary'               => $itineraries,
-        'flightOptions'           => [
-            FareMasterPricerTbSearch::FLIGHTOPT_PUBLISHED,
-            FareMasterPricerTbSearch::FLIGHTOPT_UNIFARES,
-            FareMasterPricerTbSearch::FLIGHTOPT_NO_SLICE_AND_DICE,
-            'CUC',
-        ],
-         'currencyOverride' => $opt->currencyOverride,
-    ]);
+                'nrOfRequestedResults'    => $opt->nrOfRequestedResults,
+                'nrOfRequestedPassengers' => $opt->nrOfRequestedPassengers,
+                'passengers'              => $passengers,
+                'itinerary'               => $itineraries,
+                'flightOptions'           => [
+                    FareMasterPricerTbSearch::FLIGHTOPT_PUBLISHED,
+                    FareMasterPricerTbSearch::FLIGHTOPT_UNIFARES,
+                    FareMasterPricerTbSearch::FLIGHTOPT_NO_SLICE_AND_DICE,
+                    'CUC',
+                ],
+                 'currencyOverride' => $opt->currencyOverride,
+            ]);
 
         $fareMPTS = $this->amadeusClient->fareMasterPricerTravelBoardSearch($opt);
 

@@ -70,6 +70,16 @@ class Client
         }
     }
 
+
+    public function fareBoardSearchReturnOptimzed($fmptResult)
+    {
+        if ($fmptResult['result']->status == 'OK') {
+            return  $this->AmadeusSoap->optimizeResultsReturn($fmptResult['result']);
+        } else {
+            return $fmptResult['result'];
+        }
+    }
+
     public function fareBoardAndCalendarSearch($Opt, $calendarSearchOpt)
     {
         $calendarResult = $this->FareMasterPricerCalendar($calendarSearchOpt);
@@ -82,7 +92,7 @@ class Client
         return $result;
     }
 
-    public function fareBoardAndCalendarSearchOptimzed($Opt, $calendarSearchOpt)
+    public function fareBoardAndCalendarSearchOptimzed($Opt, $calendarSearchOpt, $type = 'oneway')
     {
         $rawResult = $this->fareBoardAndCalendarSearch($Opt, $calendarSearchOpt);
         $rawcalendarResult = $rawResult['calendarSearch'];
@@ -100,10 +110,23 @@ class Client
             if ($rawcalendarResult['result']->status !== 'OK') {
                 $result['result']->errResponse = $rawcalendarResult['result'];
             }
-        } else {
-            $result['result']->status = 'OK';
-            $result['calendarSearch'] = $this->FareMasterPricerCalendarSort($rawcalendarResult);
-            $result['fareBoardSearch'] = $this->fareBoardSearchOptimzed($rawfmptResult);
+        } 
+        else 
+        {
+            switch ($type) {
+                case 'oneway':
+                    $result['result']->status = 'OK';
+                    $result['calendarSearch'] = $this->FareMasterPricerCalendarSort($rawcalendarResult);
+                    $result['fareBoardSearch'] = $this->fareBoardSearchOptimzed($rawfmptResult);
+                    break;
+                
+                case 'return':
+                    $result['result']->status = 'OK';
+                    $result['calendarSearch'] = $this->FareMasterPricerCalendarSort($rawcalendarResult);
+                    $result['fareBoardSearch'] = $this->fareBoardSearchReturnOptimzed($rawfmptResult);
+                    break;
+            }
+            
         }
 
         return $result;
