@@ -254,27 +254,23 @@ class AmadeusSoapProvider
 
         /* check for return flight*/
         if (isset($flightIndex[1])) {
-               usort($results, function ($a, $b) {
-
-                $ad = date_create_from_format('d-m-y',($a->dateOfDeparture[0]));
-                $bd = date_create_from_format('d-m-y',($b->dateOfDeparture[0]));
-                
+            usort($results, function ($a, $b) {
+                $ad = date_create_from_format('d-m-y', ($a->dateOfDeparture[0]));
+                $bd = date_create_from_format('d-m-y', ($b->dateOfDeparture[0]));
 
                 if ($ad == $bd) {
-                    $ad2 = date_create_from_format('d-m-y',($a->dateOfDeparture[1]));
-                    $bd2 = date_create_from_format('d-m-y',($b->dateOfDeparture[1]));
+                    $ad2 = date_create_from_format('d-m-y', ($a->dateOfDeparture[1]));
+                    $bd2 = date_create_from_format('d-m-y', ($b->dateOfDeparture[1]));
+
                     return $ad2 < $bd2 ? -1 : 1;
                 }
 
                 return $ad < $bd ? -1 : 1;
             });
-        }
-
-        else{
-              usort($results, function ($a, $b) {
-
-                $ad = date_create_from_format('d-m-y',($a->dateOfDeparture[0]));
-                $bd = date_create_from_format('d-m-y',($b->dateOfDeparture[0]));                
+        } else {
+            usort($results, function ($a, $b) {
+                $ad = date_create_from_format('d-m-y', ($a->dateOfDeparture[0]));
+                $bd = date_create_from_format('d-m-y', ($b->dateOfDeparture[0]));
 
                 if ($ad == $bd) {
                     return 0;
@@ -282,12 +278,7 @@ class AmadeusSoapProvider
 
                 return $ad < $bd ? -1 : 1;
             });
-
-
         }
-
-        
-
 
         return $results;
         //var_dump($amflightResults->response->flightIndex[0]->groupOfFlights);
