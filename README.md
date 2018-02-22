@@ -2,6 +2,7 @@
 
 [![Latest Stable Version](https://poser.pugx.org/appletechlabs/flight/v/stable)](https://packagist.org/packages/appletechlabs/flight)
 [![License](https://poser.pugx.org/appletechlabs/flight/license)](https://packagist.org/packages/appletechlabs/flight)
+ [![Style Status - PSR-2](https://styleci.io/repos/111105372/shield?branch=master)](https://styleci.io/repos/111105372)
 
 Flight API Combined with Following Flight API's
 - [x] Amadeus
