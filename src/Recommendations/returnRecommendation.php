@@ -2,9 +2,6 @@
 
 namespace appletechlabs\flight\Recommendations;
 
-use appletechlabs\flight\Helpers\Data;
-use appletechlabs\flight\Recommendations\segments;
-
 class returnRecommendation
 {
     public $ref;
@@ -24,14 +21,13 @@ class returnRecommendation
         if (count($data) > 0) {
             $this->ref = $data['ref'];
             foreach ($data['segments'] as $segment) {
-               $this->segments[] = new segments($segment);
+                $this->segments[] = new segments($segment);
             }
-           
+
             $this->fareSummary = $data['fareSummary'];
             $this->rateGuaranteed = $data['rateGuaranteed'];
             $this->totalFlyingTime = $data['totalFlyingTime'];
             $this->provider = $data['provider'];
         }
     }
-
 }

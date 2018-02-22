@@ -70,7 +70,6 @@ class Client
         }
     }
 
-
     public function fareBoardSearchReturnOptimzed($fmptResult)
     {
         if ($fmptResult['result']->status == 'OK') {
@@ -110,23 +109,20 @@ class Client
             if ($rawcalendarResult['result']->status !== 'OK') {
                 $result['result']->errResponse = $rawcalendarResult['result'];
             }
-        } 
-        else 
-        {
+        } else {
             switch ($type) {
                 case 'oneway':
                     $result['result']->status = 'OK';
                     $result['calendarSearch'] = $this->FareMasterPricerCalendarSort($rawcalendarResult);
                     $result['fareBoardSearch'] = $this->fareBoardSearchOptimzed($rawfmptResult);
                     break;
-                
+
                 case 'return':
                     $result['result']->status = 'OK';
                     $result['calendarSearch'] = $this->FareMasterPricerCalendarSort($rawcalendarResult);
                     $result['fareBoardSearch'] = $this->fareBoardSearchReturnOptimzed($rawfmptResult);
                     break;
             }
-            
         }
 
         return $result;

@@ -42,10 +42,8 @@ use appletechlabs\flight\Recommendations\paxFare;
 use appletechlabs\flight\Recommendations\Recommendation;
 use appletechlabs\flight\Recommendations\returnRecommendation;
 use appletechlabs\flight\Recommendations\Rules;
-use Psr\Log\NullLogger;
-
-use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 
 class AmadeusSoapProvider
 {
@@ -225,41 +223,35 @@ class AmadeusSoapProvider
         }
     }
 
-
-
     public function calendarMin($amflightResults)
     {
         $flightIndex = Data::dataToArray($amflightResults->response->flightIndex);
         $recommendations = $amflightResults->response->recommendation;
 
-
-
         $recommendationRef = 0;
-
 
         foreach ($recommendations as $recommendation) {
             foreach ($recommendation->segmentFlightRef as  $key =>  $segmentFlightRef) {
-
                 $result = new \stdClass();
                 $result->ref = ++$recommendationRef;
                 /* Get Total Base Fare */
-                
+
                 $segmentFlightRef->referencingDetail = Data::dataToArray($segmentFlightRef->referencingDetail);
-                foreach ($segmentFlightRef->referencingDetail as $segmentRef => $referencingDetail) { 
+                foreach ($segmentFlightRef->referencingDetail as $segmentRef => $referencingDetail) {
                     if ($referencingDetail->refQualifier == 'S') {
-                        //$result->segmentRef[$segmentRef+1] = $referencingDetail->refNumber;  
+                        //$result->segmentRef[$segmentRef+1] = $referencingDetail->refNumber;
                         $flight = $this->getFlightPrposals($referencingDetail->refNumber, $flightIndex[$segmentRef]->groupOfFlights);
                         $flight->flightDetails = Data::dataToArray($flight->flightDetails);
-                        $dateOfDeparture =  $flight->flightDetails[0]->flightInformation->productDateTime->dateOfDeparture;
+                        $dateOfDeparture = $flight->flightDetails[0]->flightInformation->productDateTime->dateOfDeparture;
                         $result->dateOfDeparture[] = date_create_from_format('dmy', $dateOfDeparture)->format('d-m-y');
                         $result->dateMonth[] = date_create_from_format('dmy', $dateOfDeparture)->format('d M');
                     }
                 }
                 $result->totalFareAmount = $recommendation->recPriceInfo->monetaryDetail[0]->amount;
                 $results[] = $result;
-                           
             }
         }
+
         return $results;
         //var_dump($amflightResults->response->flightIndex[0]->groupOfFlights);
         /* This doesn't work with multiple itineray options */
@@ -462,8 +454,6 @@ class AmadeusSoapProvider
     {
         $groupOfFlights = Data::dataToArray($groupOfFlights);
 
-
-
         $result = new \stdClass();
         foreach ($groupOfFlights as $segment) {
             if ($segment->propFlightGrDetail->flightProposal[0]->ref == $ref) {
@@ -483,30 +473,33 @@ class AmadeusSoapProvider
 
         return $result;
     }
-/**
- * Get Currency Type
- * @param array $conversionRateDetail 
- * @return string $currency
- */
-public function getCurrencyType($conversionRateDetail)
-{
-    $currency = "";
-    if (is_array($conversionRateDetail))
-    {
-        $currency = $conversionRateDetail[0]->currency;
-    }
-    else 
-    {
-        $currency = $conversionRateDetail->currency;
-    }
-    return $currency;
-}
 
-/**
- * Optimize Amadeus Results for Flights With One Way
- * @param array $amflightResults 
- * @return Result
- */
+    /**
+     * Get Currency Type.
+     *
+     * @param array $conversionRateDetail
+     *
+     * @return string $currency
+     */
+    public function getCurrencyType($conversionRateDetail)
+    {
+        $currency = '';
+        if (is_array($conversionRateDetail)) {
+            $currency = $conversionRateDetail[0]->currency;
+        } else {
+            $currency = $conversionRateDetail->currency;
+        }
+
+        return $currency;
+    }
+
+    /**
+     * Optimize Amadeus Results for Flights With One Way.
+     *
+     * @param array $amflightResults
+     *
+     * @return Result
+     */
     public function optimizeResults($amflightResults)
     {
         //var_dump($amflightResults);
@@ -514,7 +507,6 @@ public function getCurrencyType($conversionRateDetail)
         /* Todo : array check*/
 
         $currency = $this->getCurrencyType($amflightResults->response->conversionRate->conversionRateDetail);
-        
 
         $groupOfFlights = $amflightResults->response->flightIndex->groupOfFlights;
         $recommendations = $amflightResults->response->recommendation;
@@ -624,11 +616,13 @@ public function getCurrencyType($conversionRateDetail)
         return $Recommendations;
     }
 
-/**
- * Optimize Amadeus Results for Flights With Return Type
- * @param array $amflightResults 
- * @return Result
- */
+    /**
+     * Optimize Amadeus Results for Flights With Return Type.
+     *
+     * @param array $amflightResults
+     *
+     * @return Result
+     */
     public function optimizeResultsReturn($amflightResults)
     {
         //var_dump($amflightResults);
@@ -641,7 +635,6 @@ public function getCurrencyType($conversionRateDetail)
         $results = [];
 
         foreach ($recommendations as $recommendation) {
-
             $recPriceInfo = Data::dataToArray($recommendation->recPriceInfo->monetaryDetail);
 
             foreach ($recPriceInfo as $recPriceInfoItem) {
@@ -657,24 +650,22 @@ public function getCurrencyType($conversionRateDetail)
             }
 
             /* Recommendaton References */
-            $segmentFlightReferences = Data::dataToArray($recommendation->segmentFlightRef);           
-            
+            $segmentFlightReferences = Data::dataToArray($recommendation->segmentFlightRef);
 
             foreach ($segmentFlightReferences as $segmentFlightRefKey => $segmentFlightRef) {
-            /* Recommendations for a single pricing */
+                /* Recommendations for a single pricing */
 
-            $result = new \stdClass();
+                $result = new \stdClass();
 
                 $recommendationRef += 1;
-                $result->ref =  $recommendationRef;
+                $result->ref = $recommendationRef;
                 /* Flight Proposals and Currency Conversions */
                 $referencingDetails = Data::dataToArray($segmentFlightRef->referencingDetail);
 
                 $result->segmentFlightRef = [];
-                foreach ($referencingDetails as $referencingDetailKey => $referencingDetail) {  
+                foreach ($referencingDetails as $referencingDetailKey => $referencingDetail) {
                     /* Get Only Sector refrernces from refQualifier = S */
-                    if ($referencingDetail->refQualifier == 'S') { 
-
+                    if ($referencingDetail->refQualifier == 'S') {
                         $result->segmentFlightRef[] = $referencingDetail;
 
                         if ($referencingDetailKey == 0) {
@@ -689,12 +680,11 @@ public function getCurrencyType($conversionRateDetail)
                 $flightPrice = Data::dataToArray($recommendation->paxFareProduct);
 
                 /* Get Flight booking Classes */
-                $majCabin  = [];
+                $majCabin = [];
                 $cabinProduct = [];
                 foreach ($flightPrice[0]->fareDetails as $fareDetails) {
                     $majCabin[] = $this->getCabinDescription($fareDetails->majCabin->bookingClassDetails->designator);
                     $cabinProduct = $this->seatStatus($fareDetails->groupOfFares);
-
                 }
 
                 /* Get Pax Fare Details from  recommentaion*/
@@ -747,31 +737,29 @@ public function getCurrencyType($conversionRateDetail)
                 $flightTiming = $this->getFlightDetails($flightDetails->flightDetails, $cabinProduct->class);
                 $returnflightTiming = $this->getFlightDetails($ReturnflightDetails->flightDetails, $cabinProduct->class);
 
-
-                  $Recommendation = new returnRecommendation([
+                $Recommendation = new returnRecommendation([
                  'ref'              => $referencingDetail->refNumber,
                  'segments'         => [
-                    array(
-                            'ref'    => 1,
+                    [
+                            'ref'              => 1,
                             'flightDetails'    => $flightTiming->info,
                             'majCabin'         => $majCabin,
                             'majAirline'       => $flightDetails->MajAirline,
                             'stopInfo'         => $flightInfo->stopInfo,
                             'airports'         => $flightInfo->airports,
                             'seatAvailability' => $cabinProduct->status,
-                        ),
-                    array(
-                            'ref'    => 2,
+                        ],
+                    [
+                            'ref'              => 2,
                             'flightDetails'    => $returnflightTiming->info,
                             'majCabin'         => $majCabin,
                             'majAirline'       => $flightDetails->MajAirline,
                             'stopInfo'         => $returnFlightInfo->stopInfo,
                             'airports'         => $returnFlightInfo->airports,
                             'seatAvailability' => $cabinProduct->status,
-                        ),
+                        ],
                     ],
 
-                 
                  'rateGuaranteed'   => $rateGuaranteed,
                  'totalFlyingTime'  => $flightDetails->EFT,
                  'provider'         => self::PROVIDER,
@@ -782,8 +770,7 @@ public function getCurrencyType($conversionRateDetail)
                     ]),
                 ]);
 
-                $results[] =  $Recommendation;                
-
+                $results[] = $Recommendation;
             }
         }
 
@@ -807,7 +794,7 @@ public function getCurrencyType($conversionRateDetail)
         $fareMPC = $this->amadeusClient->fareMasterPricerCalendar($calendarSearchOpt);
 
         return ['provider' => self::PROVIDER,
-       'result'           => $fareMPC, ];
+       'result'            => $fareMPC, ];
     }
 
     public function FareMasterPricerTravelboardSearch($opt)
@@ -832,7 +819,7 @@ public function getCurrencyType($conversionRateDetail)
         $fareMPTS = $this->amadeusClient->fareMasterPricerTravelBoardSearch($opt);
 
         return ['provider' => self::PROVIDER,
-       'result'        => $fareMPTS, ];
+       'result'            => $fareMPTS, ];
     }
 
     public function Fare_InformativePricingWithoutPNR()
