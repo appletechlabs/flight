@@ -40,6 +40,7 @@ use appletechlabs\flight\Providers\AmadeusSoapProvider\PNR_AddMultiElements;
 use appletechlabs\flight\Recommendations\fareSummary;
 use appletechlabs\flight\Recommendations\paxFare;
 use appletechlabs\flight\Recommendations\Recommendation;
+use appletechlabs\flight\Recommendations\returnRecommendation;
 use appletechlabs\flight\Recommendations\Rules;
 use Psr\Log\NullLogger;
 
@@ -224,8 +225,42 @@ class AmadeusSoapProvider
         }
     }
 
+
+
     public function calendarMin($amflightResults)
     {
+        $flightIndex = Data::dataToArray($amflightResults->response->flightIndex);
+        $recommendations = $amflightResults->response->recommendation;
+
+
+
+        $recommendationRef = 0;
+
+
+        foreach ($recommendations as $recommendation) {
+            foreach ($recommendation->segmentFlightRef as  $key =>  $segmentFlightRef) {
+
+                $result = new \stdClass();
+                $result->ref = ++$recommendationRef;
+                /* Get Total Base Fare */
+                
+                $segmentFlightRef->referencingDetail = Data::dataToArray($segmentFlightRef->referencingDetail);
+                foreach ($segmentFlightRef->referencingDetail as $segmentRef => $referencingDetail) { 
+                    if ($referencingDetail->refQualifier == 'S') {
+                        //$result->segmentRef[$segmentRef+1] = $referencingDetail->refNumber;  
+                        $flight = $this->getFlightPrposals($referencingDetail->refNumber, $flightIndex[$segmentRef]->groupOfFlights);
+                        $flight->flightDetails = Data::dataToArray($flight->flightDetails);
+                        $dateOfDeparture =  $flight->flightDetails[0]->flightInformation->productDateTime->dateOfDeparture;
+                        $result->dateOfDeparture[] = date_create_from_format('dmy', $dateOfDeparture)->format('d-m-y');
+                        $result->dateMonth[] = date_create_from_format('dmy', $dateOfDeparture)->format('d M');
+                    }
+                }
+                $result->totalFareAmount = $recommendation->recPriceInfo->monetaryDetail[0]->amount;
+                $results[] = $result;
+                           
+            }
+        }
+        return $results;
         //var_dump($amflightResults->response->flightIndex[0]->groupOfFlights);
         /* This doesn't work with multiple itineray options */
         /* Todo : array check*/
@@ -252,7 +287,7 @@ class AmadeusSoapProvider
             }
             $dateOfDeparture = date_create_from_format('dmy', $date);
 
-            $result->flight[$key] = new \stdClass(); /* fix undefined stdObject warning */
+            $result->flight[$key] = new \stdClass();
             $result->flight[$key]->ref = $propFlightRef;
             $result->flight[$key]->dateOfDeparture = $dateOfDeparture->format('d-m-y');
             $result->flight[$key]->dateMonth = $dateOfDeparture->format('d M');
@@ -427,6 +462,8 @@ class AmadeusSoapProvider
     {
         $groupOfFlights = Data::dataToArray($groupOfFlights);
 
+
+
         $result = new \stdClass();
         foreach ($groupOfFlights as $segment) {
             if ($segment->propFlightGrDetail->flightProposal[0]->ref == $ref) {
@@ -600,6 +637,9 @@ public function getCurrencyType($conversionRateDetail)
         $flightSegments = $amflightResults->response->flightIndex;
         $recommendations = $amflightResults->response->recommendation;
 
+        $recommendationRef = 0;
+        $results = [];
+
         foreach ($recommendations as $recommendation) {
 
             $recPriceInfo = Data::dataToArray($recommendation->recPriceInfo->monetaryDetail);
@@ -617,37 +657,134 @@ public function getCurrencyType($conversionRateDetail)
             }
 
             /* Recommendaton References */
-            $segmentFlightReferences = Data::dataToArray($recommendation->segmentFlightRef);
+            $segmentFlightReferences = Data::dataToArray($recommendation->segmentFlightRef);           
+            
+
+            foreach ($segmentFlightReferences as $segmentFlightRefKey => $segmentFlightRef) {
+            /* Recommendations for a single pricing */
+
             $result = new \stdClass();
-            foreach ($segmentFlightReferences as $segmentFlightRef) {
+
+                $recommendationRef += 1;
+                $result->ref =  $recommendationRef;
                 /* Flight Proposals and Currency Conversions */
                 $referencingDetails = Data::dataToArray($segmentFlightRef->referencingDetail);
+
+                $result->segmentFlightRef = [];
                 foreach ($referencingDetails as $referencingDetailKey => $referencingDetail) {  
-                    /* Get Only Segment refrernces from refQualifier = S */
-                    if ($referencingDetail->refQualifier == 'S') {
+                    /* Get Only Sector refrernces from refQualifier = S */
+                    if ($referencingDetail->refQualifier == 'S') { 
 
                         $result->segmentFlightRef[] = $referencingDetail;
 
-                        $flightPrice = Data::dataToArray($recommendation->paxFareProduct);
-
-                        $majCabin = [];
-
-                        foreach ($flightPrice[0]->fareDetails as $fareDetails) {
-                            $majCabin[] = $this->getCabinDescription($fareDetails->majCabin->bookingClassDetails->designator);
+                        if ($referencingDetailKey == 0) {
+                            $flightDetails = $this->getFlightPrposals($referencingDetail->refNumber, $flightSegments[0]->groupOfFlights);
                         }
-
-                        $result->$majCabin;
-                        
-
+                        if ($referencingDetailKey == 1) {
+                            $ReturnflightDetails = $this->getFlightPrposals($referencingDetail->refNumber, $flightSegments[1]->groupOfFlights);
+                        }
                     }
                 }
 
-                
+                $flightPrice = Data::dataToArray($recommendation->paxFareProduct);
+
+                /* Get Flight booking Classes */
+                $majCabin  = [];
+                $cabinProduct = [];
+                foreach ($flightPrice[0]->fareDetails as $fareDetails) {
+                    $majCabin[] = $this->getCabinDescription($fareDetails->majCabin->bookingClassDetails->designator);
+                    $cabinProduct = $this->seatStatus($fareDetails->groupOfFares);
+
+                }
+
+                /* Get Pax Fare Details from  recommentaion*/
+                $paxFareList = [];
+                foreach ($flightPrice as $flightPriceKey => $flightPriceitem) {
+                    $type = $flightPriceitem->paxReference->ptc;
+                    $noOfPassengers = count($flightPriceitem->paxReference->traveller);
+
+                    $taxesAndFees = $flightPriceitem->paxFareDetail->totalTaxAmount;
+                    $total = $flightPriceitem->paxFareDetail->totalFareAmount;
+                    $baseFare = round($total - $taxesAndFees, 2);
+
+                    if (isset($flightPriceitem->fare)) {
+                        $fareRules = $flightPriceitem->fare ?? null;
+
+                        if (!is_array($fareRules)) {
+                            $fareRules = Data::dataToArray($fareRules);
+                        }
+
+                        $paxFareRules = [];
+                        foreach ($fareRules as $fareRulekey => $fareRule) {
+                            $informationType = $fareRule->pricingMessage->freeTextQualification->informationType;
+                            $description = $fareRule->pricingMessage->description;
+                            $monetaryDetail = $fareRule->monetaryInformation->monetaryDetail ?? null;
+
+                            $paxFareRule = new Rules([
+                               'informationType' => $informationType,
+                               'description'     => $description,
+                               'monetaryDetail'  => $monetaryDetail,
+                            ]);
+                            $paxFareRules[] = $paxFareRule;
+                        }
+                    }
+
+                    $paxFare = new paxFare([
+                          'type'           => $type,
+                          'noOfPassengers' => $noOfPassengers,
+                          'baseFare'       => $baseFare,
+                          'taxesAndFees'   => $taxesAndFees,
+                          'total'          => $total,
+                          'paxFareRules'   => $paxFareRules ?? null,
+                      ]);
+
+                    $paxFareList[] = $paxFare;
+                }
+
+                $flightInfo = $this->optimizeInfo($flightDetails->flightDetails);
+                $returnFlightInfo = $this->optimizeInfo($ReturnflightDetails->flightDetails);
+
+                $flightTiming = $this->getFlightDetails($flightDetails->flightDetails, $cabinProduct->class);
+                $returnflightTiming = $this->getFlightDetails($ReturnflightDetails->flightDetails, $cabinProduct->class);
+
+
+                  $Recommendation = new returnRecommendation([
+                 'ref'              => $referencingDetail->refNumber,
+                 'segments'         => [
+                    array(
+                            'ref'    => 1,
+                            'flightDetails'    => $flightTiming->info,
+                            'majCabin'         => $majCabin,
+                            'majAirline'       => $flightDetails->MajAirline,
+                            'stopInfo'         => $flightInfo->stopInfo,
+                            'airports'         => $flightInfo->airports,
+                            'seatAvailability' => $cabinProduct->status,
+                        ),
+                    array(
+                            'ref'    => 2,
+                            'flightDetails'    => $returnflightTiming->info,
+                            'majCabin'         => $majCabin,
+                            'majAirline'       => $flightDetails->MajAirline,
+                            'stopInfo'         => $returnFlightInfo->stopInfo,
+                            'airports'         => $returnFlightInfo->airports,
+                            'seatAvailability' => $cabinProduct->status,
+                        ),
+                    ],
+
+                 
+                 'rateGuaranteed'   => $rateGuaranteed,
+                 'totalFlyingTime'  => $flightDetails->EFT,
+                 'provider'         => self::PROVIDER,
+                 'fareSummary'      => new fareSummary([
+                      'currency' => $currency,
+                      'pax'      => $paxFareList,
+                      'total'    => $totalAmount,
+                    ]),
+                ]);
+
+                $results[] =  $Recommendation;                
 
             }
-
-            $results[] = $result;
-
         }
 
         return $results;
