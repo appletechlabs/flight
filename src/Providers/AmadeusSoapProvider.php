@@ -231,7 +231,7 @@ class AmadeusSoapProvider
         $recommendationRef = 0;
 
         foreach ($recommendations as $recommendation) {
-             $recommendation->segmentFlightRef = Data::dataToArray($recommendation->segmentFlightRef);
+            $recommendation->segmentFlightRef = Data::dataToArray($recommendation->segmentFlightRef);
             foreach ($recommendation->segmentFlightRef as  $key =>  $segmentFlightRef) {
                 $result = new \stdClass();
                 $result->ref = ++$recommendationRef;
