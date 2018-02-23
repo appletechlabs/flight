@@ -718,11 +718,9 @@ class AmadeusSoapProvider
                 }
 
                 $majAirline = null;
-                if (isset($flightPrice[0]->paxFareDetail->codeShareDetails->company)){  
-                     $majAirline = $flightPrice[0]->paxFareDetail->codeShareDetails->company;
+                if (isset($flightPrice[0]->paxFareDetail->codeShareDetails->company)) {
+                    $majAirline = $flightPrice[0]->paxFareDetail->codeShareDetails->company;
                 }
-
-                
 
                 /* Get Pax Fare Details from  recommentaion*/
                 $paxFareList = [];
