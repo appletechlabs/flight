@@ -706,6 +706,7 @@ class AmadeusSoapProvider
                     }
                 }
 
+                /* returns array in mulitple passenger types*/
                 $flightPrice = Data::dataToArray($recommendation->paxFareProduct);
 
                 /* Get Flight booking Classes */
@@ -715,6 +716,13 @@ class AmadeusSoapProvider
                     $majCabin[] = $this->getCabinDescription($fareDetails->majCabin->bookingClassDetails->designator);
                     $cabinProduct = $this->seatStatus($fareDetails->groupOfFares);
                 }
+
+                $majAirline = null;
+                if (isset($flightPrice[0]->paxFareDetail->codeShareDetails->company)){  
+                     $majAirline = $flightPrice[0]->paxFareDetail->codeShareDetails->company;
+                }
+
+                
 
                 /* Get Pax Fare Details from  recommentaion*/
                 $paxFareList = [];
@@ -790,6 +798,7 @@ class AmadeusSoapProvider
                     ],
 
                  'rateGuaranteed'   => $rateGuaranteed,
+                 'majAirline'       => $majAirline,
                  'totalFlyingTime'  => $flightDetails->EFT,
                  'provider'         => self::PROVIDER,
                  'fareSummary'      => new fareSummary([

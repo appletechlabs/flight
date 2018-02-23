@@ -7,6 +7,7 @@ class returnRecommendation
     public $ref;
     public $segments;
     public $fareSummary;
+    public $majAirline;
     public $rateGuaranteed;
     public $totalFlyingTime;
     public $provider;
@@ -25,6 +26,7 @@ class returnRecommendation
             }
 
             $this->fareSummary = $data['fareSummary'];
+            $this->majAirline = $data['majAirline'];
             $this->rateGuaranteed = $data['rateGuaranteed'];
             $this->totalFlyingTime = $data['totalFlyingTime'];
             $this->provider = $data['provider'];
