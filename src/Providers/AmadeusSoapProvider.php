@@ -785,6 +785,7 @@ class AmadeusSoapProvider
                             'stopInfo'         => $flightInfo->stopInfo,
                             'airports'         => $flightInfo->airports,
                             'seatAvailability' => $cabinProduct->status,
+                            'totalFlyingTime'  => $flightDetails->EFT,
                         ],
                     [
                             'ref'              => 2,
@@ -794,12 +795,13 @@ class AmadeusSoapProvider
                             'stopInfo'         => $returnFlightInfo->stopInfo,
                             'airports'         => $returnFlightInfo->airports,
                             'seatAvailability' => $cabinProduct->status,
+                            'totalFlyingTime'  => $ReturnflightDetails->EFT,
+                            
                         ],
                     ],
 
                  'rateGuaranteed'   => $rateGuaranteed,
                  'majAirline'       => $majAirline,
-                 'totalFlyingTime'  => $flightDetails->EFT,
                  'provider'         => self::PROVIDER,
                  'fareSummary'      => new fareSummary([
                       'currency' => $currency,

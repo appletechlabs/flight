@@ -15,6 +15,7 @@ class segments
     public $seatAvailability;
     public $origin;
     public $destination;
+    public $totalFlyingTime;
 
     public function __construct($data = [])
     {
@@ -32,6 +33,7 @@ class segments
             $this->stopInfo = $data['stopInfo'];
             $this->airports = $data['airports'];
             $this->seatAvailability = $data['seatAvailability'];
+            $this->totalFlyingTime = $data['totalFlyingTime'];
         }
     }
 
