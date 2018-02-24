@@ -687,7 +687,6 @@ class AmadeusSoapProvider
                 $result = new \stdClass();
 
                 $recommendationRef += 1;
-                $result->ref = $recommendationRef;
                 /* Flight Proposals and Currency Conversions */
                 $referencingDetails = Data::dataToArray($segmentFlightRef->referencingDetail);
 
@@ -777,7 +776,7 @@ class AmadeusSoapProvider
                 $returnflightTiming = $this->getFlightDetails($ReturnflightDetails->flightDetails, $cabinProduct->class);
 
                 $Recommendation = new returnRecommendation([
-                 'ref'              => $referencingDetail->refNumber,
+                 'ref'              =>  $recommendationRef,
                  'segments'         => [
                     [
                             'ref'              => 1,
