@@ -796,7 +796,7 @@ class AmadeusSoapProvider
                             'airports'         => $returnFlightInfo->airports,
                             'seatAvailability' => $cabinProduct->status,
                             'totalFlyingTime'  => $ReturnflightDetails->EFT,
-                            
+
                         ],
                     ],
 
