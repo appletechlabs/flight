@@ -719,12 +719,11 @@ class AmadeusSoapProvider
 
                 $majAirline = null;
                 $codeShareDetails = Data::dataToArray($flightPrice[0]->paxFareDetail->codeShareDetails);
-                foreach ( $codeShareDetails as  $codeShareDetail) {
-                    if (isset($codeShareDetail->transportStageQualifier) && $codeShareDetail->transportStageQualifier == "V") {
+                foreach ($codeShareDetails as  $codeShareDetail) {
+                    if (isset($codeShareDetail->transportStageQualifier) && $codeShareDetail->transportStageQualifier == 'V') {
                         $majAirline = $codeShareDetail->company;
                     }
                 }
-                
 
                 /* Get Pax Fare Details from  recommentaion*/
                 $paxFareList = [];
