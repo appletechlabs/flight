@@ -775,7 +775,7 @@ class AmadeusSoapProvider
                 $returnflightTiming = $this->getFlightDetails($ReturnflightDetails->flightDetails, $cabinProduct->class);
 
                 $Recommendation = new returnRecommendation([
-                 'ref'              =>  $recommendationRef,
+                 'ref'              => $recommendationRef,
                  'segments'         => [
                     [
                             'ref'              => 1,
