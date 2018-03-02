@@ -23,14 +23,13 @@ class PNR_AddMultiElements
 
         $this->opt->travellers = [];
         foreach ($contactInfo as $travellerInfo) {
-                 $this->opt->travellers[] = new Traveller([
+            $this->opt->travellers[] = new Traveller([
                 'number'      => $travellerInfo['number'],
                 'firstName'   => $travellerInfo['firstName'],
                 'lastName'    => $travellerInfo['lastName'],
                 'dateOfBirth' => $travellerInfo['dateOfBirth'],
             ]);
         }
-       
 
         foreach ($itinerary as $itinerarykey => $itineraryItem) {
             $newItinerary = [];
