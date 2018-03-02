@@ -16,7 +16,6 @@ class PNR_AddMultiElements
 
     public function __construct($itinerary, $contactInfo)
     {
-        $optArray = [];
 
         $this->opt = new PnrCreatePnrOptions();
         $this->opt->actionCode = PnrCreatePnrOptions::ACTION_END_TRANSACT_RETRIEVE; //0 Do not yet save the PNR and keep in context.
