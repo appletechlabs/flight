@@ -461,7 +461,10 @@ class AmadeusSoapProvider
             $info->flightNumber = $flight->flightInformation->flightOrtrainNumber;
             $info->aircraft = $flight->flightInformation->productDetail->equipmentType;
             $info->marketingCarrier = $flight->flightInformation->companyId->marketingCarrier;
-            if(!isset($class[$flightDetailsKey])){var_dump($flightDetails,$class);exit();}
+            if (!isset($class[$flightDetailsKey])) {
+                var_dump($flightDetails, $class);
+                exit();
+            }
 
             $info->class = $class[$flightDetailsKey];
 
