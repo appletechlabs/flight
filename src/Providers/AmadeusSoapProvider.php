@@ -226,7 +226,8 @@ class AmadeusSoapProvider
     public function calendarMin($amflightResults)
     {
         $flightIndex = Data::dataToArray($amflightResults->response->flightIndex);
-        $recommendations = $amflightResults->response->recommendation;
+        /* If only one recommendation */
+        $recommendations =  Data::dataToArray($amflightResults->response->recommendation);
 
         $recommendationRef = 0;
 
