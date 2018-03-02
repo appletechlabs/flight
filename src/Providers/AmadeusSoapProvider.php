@@ -227,7 +227,7 @@ class AmadeusSoapProvider
     {
         $flightIndex = Data::dataToArray($amflightResults->response->flightIndex);
         /* If only one recommendation */
-        $recommendations =  Data::dataToArray($amflightResults->response->recommendation);
+        $recommendations = Data::dataToArray($amflightResults->response->recommendation);
 
         $recommendationRef = 0;
 
