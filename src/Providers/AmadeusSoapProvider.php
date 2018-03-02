@@ -256,7 +256,7 @@ class AmadeusSoapProvider
 
         /* check for return flight*/
         if (isset($flightIndex[1])) {
-            usort($results, function ($a, $b) {
+            usort($results, function($a, $b) {
                 $ad = date_create_from_format('d-m-y', ($a->dateOfDeparture[0]));
                 $bd = date_create_from_format('d-m-y', ($b->dateOfDeparture[0]));
 
@@ -270,7 +270,7 @@ class AmadeusSoapProvider
                 return $ad < $bd ? -1 : 1;
             });
         } else {
-            usort($results, function ($a, $b) {
+            usort($results, function($a, $b) {
                 $ad = date_create_from_format('d-m-y', ($a->dateOfDeparture[0]));
                 $bd = date_create_from_format('d-m-y', ($b->dateOfDeparture[0]));
 
@@ -316,7 +316,7 @@ class AmadeusSoapProvider
             $result->flight[$key]->totalFareAmount = $totalFareAmount;
         }
 
-        usort($result->flight, function ($a, $b) {
+        usort($result->flight, function($a, $b) {
             return strtotime($a->dateOfDeparture) - strtotime($b->dateOfDeparture);
         });
 
