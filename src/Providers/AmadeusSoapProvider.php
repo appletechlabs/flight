@@ -461,6 +461,8 @@ class AmadeusSoapProvider
             $info->flightNumber = $flight->flightInformation->flightOrtrainNumber;
             $info->aircraft = $flight->flightInformation->productDetail->equipmentType;
             $info->marketingCarrier = $flight->flightInformation->companyId->marketingCarrier;
+            if(!isset($class[$flightDetailsKey])){var_dump($flightDetails,$class);exit();}
+
             $info->class = $class[$flightDetailsKey];
 
             if ($flightDetailsKey != 0) {
@@ -713,7 +715,7 @@ class AmadeusSoapProvider
                 $cabinProduct = [];
                 foreach ($flightPrice[0]->fareDetails as $fareDetails) {
                     $majCabin[] = $this->getCabinDescription($fareDetails->majCabin->bookingClassDetails->designator);
-                    $cabinProduct = $this->seatStatus($fareDetails->groupOfFares);
+                    $cabinProduct[] = $this->seatStatus($fareDetails->groupOfFares);
                 }
 
                 $majAirline = null;
@@ -771,8 +773,8 @@ class AmadeusSoapProvider
                 $flightInfo = $this->optimizeInfo($flightDetails->flightDetails);
                 $returnFlightInfo = $this->optimizeInfo($ReturnflightDetails->flightDetails);
 
-                $flightTiming = $this->getFlightDetails($flightDetails->flightDetails, $cabinProduct->class);
-                $returnflightTiming = $this->getFlightDetails($ReturnflightDetails->flightDetails, $cabinProduct->class);
+                $flightTiming = $this->getFlightDetails($flightDetails->flightDetails, $cabinProduct[0]->class);
+                $returnflightTiming = $this->getFlightDetails($ReturnflightDetails->flightDetails, $cabinProduct[1]->class);
 
                 $Recommendation = new returnRecommendation([
                  'ref'              => $recommendationRef,
@@ -784,7 +786,7 @@ class AmadeusSoapProvider
                             'majAirline'       => $flightDetails->MajAirline,
                             'stopInfo'         => $flightInfo->stopInfo,
                             'airports'         => $flightInfo->airports,
-                            'seatAvailability' => $cabinProduct->status,
+                            'seatAvailability' => $cabinProduct[0]->status,
                             'totalFlyingTime'  => $flightDetails->EFT,
                         ],
                     [
@@ -794,7 +796,7 @@ class AmadeusSoapProvider
                             'majAirline'       => $flightDetails->MajAirline,
                             'stopInfo'         => $returnFlightInfo->stopInfo,
                             'airports'         => $returnFlightInfo->airports,
-                            'seatAvailability' => $cabinProduct->status,
+                            'seatAvailability' => $cabinProduct[1]->status,
                             'totalFlyingTime'  => $ReturnflightDetails->EFT,
 
                         ],
