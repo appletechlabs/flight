@@ -14,7 +14,7 @@ class PNR_AddMultiElements
 {
     public $opt;
 
-    public function __construct($itinerary, $contactInfo)
+    public function __construct($flightCombinations, $contactInfo)
     {
         $this->opt = new PnrCreatePnrOptions();
         $this->opt->actionCode = PnrCreatePnrOptions::ACTION_END_TRANSACT_RETRIEVE; //0 Do not yet save the PNR and keep in context.
@@ -28,31 +28,34 @@ class PNR_AddMultiElements
                 'dateOfBirth' => $travellerInfo['dateOfBirth'],
             ]);
         }
+        foreach ($flightCombinations as $flightCombination) {
+            foreach ($flightCombination as $itinerarykey => $itineraryItem) {
+                $newItinerary = [];
 
-        foreach ($itinerary as $itinerarykey => $itineraryItem) {
-            $newItinerary = [];
+                $newItinerary['from'] = $itineraryItem['from'];
+                $newItinerary['to'] = $itineraryItem['to'];
 
-            $newItinerary['from'] = $itineraryItem['from'];
-            $newItinerary['to'] = $itineraryItem['to'];
+                $newSegments = [];
 
-            $newSegments = [];
+                foreach ($itineraryItem['segments'] as $segment) {
+                    $newSegment = new Air([
+                      'date'         => $segment['date'],
+                      'origin'       => $segment['origin'],
+                      'destination'  => $segment['destination'],
+                      'flightNumber' => $segment['flightNumber'],
+                      'bookingClass' => $segment['bookingClass'],
+                      'company'      => $segment['company'],
+                    ]);
 
-            foreach ($itineraryItem['segments'] as $segment) {
-                $newSegment = new Air([
-                  'date'         => $segment['date'],
-                  'origin'       => $segment['origin'],
-                  'destination'  => $segment['destination'],
-                  'flightNumber' => $segment['flightNumber'],
-                  'bookingClass' => $segment['bookingClass'],
-                  'company'      => $segment['company'],
-                ]);
+                    $newSegments[] = $newSegment;
+                }
 
-                $newSegments[] = $newSegment;
+                $newItinerary['segments'] = $newSegments;
+                $this->opt->itineraries[] = new Itinerary($newItinerary);
             }
-
-            $newItinerary['segments'] = $newSegments;
-            $this->opt->itineraries[] = new Itinerary($newItinerary);
         }
+
+        
 
         $this->opt->elements[] = new Ticketing([
             'ticketMode' => Ticketing::TICKETMODE_OK,
