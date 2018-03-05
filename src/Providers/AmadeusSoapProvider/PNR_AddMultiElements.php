@@ -55,8 +55,6 @@ class PNR_AddMultiElements
             }
         }
 
-        
-
         $this->opt->elements[] = new Ticketing([
             'ticketMode' => Ticketing::TICKETMODE_OK,
         ]);
