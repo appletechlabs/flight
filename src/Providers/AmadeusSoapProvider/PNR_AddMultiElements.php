@@ -14,45 +14,42 @@ class PNR_AddMultiElements
 {
     public $opt;
 
-    public function __construct($flightCombinations, $contactInfo)
+    public function __construct($itinerary, $contactInfo)
     {
+        $optArray = [];
+
         $this->opt = new PnrCreatePnrOptions();
         $this->opt->actionCode = PnrCreatePnrOptions::ACTION_END_TRANSACT_RETRIEVE; //0 Do not yet save the PNR and keep in context.
+        $this->opt->travellers[] = new Traveller([
+            'number'      => $contactInfo['number'],
+            'firstName'   => $contactInfo['firstName'],
+            'lastName'    => $contactInfo['lastName'],
+            'dateOfBirth' => $contactInfo['dateOfBirth'],
+        ]);
 
-        $this->opt->travellers = [];
-        foreach ($contactInfo as $travellerInfo) {
-            $this->opt->travellers[] = new Traveller([
-                'number'      => $travellerInfo['number'],
-                'firstName'   => $travellerInfo['firstName'],
-                'lastName'    => $travellerInfo['lastName'],
-                'dateOfBirth' => $travellerInfo['dateOfBirth'],
-            ]);
-        }
-        foreach ($flightCombinations as $flightCombination) {
-            foreach ($flightCombination as $itinerarykey => $itineraryItem) {
-                $newItinerary = [];
+        foreach ($itinerary as $itinerarykey => $itineraryItem) {
+            $newItinerary = [];
 
-                $newItinerary['from'] = $itineraryItem['from'];
-                $newItinerary['to'] = $itineraryItem['to'];
+            $newItinerary['from'] = $itineraryItem['from'];
+            $newItinerary['to'] = $itineraryItem['to'];
 
-                $newSegments = [];
+            $newSegments = [];
 
-                foreach ($itineraryItem['segments'] as $segment) {
-                    $newSegment = new Air([
-                      'date'         => $segment['date'],
-                      'origin'       => $segment['origin'],
-                      'destination'  => $segment['destination'],
-                      'flightNumber' => $segment['flightNumber'],
-                      'bookingClass' => $segment['bookingClass'],
-                      'company'      => $segment['company'],
-                    ]);
+            foreach ($itineraryItem['segments'] as $segment) {
+                $newSegment = new Air([
+                  'date'         => $segment['date'],
+                  'origin'       => $segment['origin'],
+                  'destination'  => $segment['destination'],
+                  'flightNumber' => $segment['flightNumber'],
+                  'bookingClass' => $segment['bookingClass'],
+                  'company'      => $segment['company'],
+                ]);
 
-                    $newSegments[] = $newSegment;
-                }
-
-                $newItinerary['segments'] = $newSegments;
-                $this->opt->itineraries[] = new Itinerary($newItinerary);
+                $newSegments[] = $newSegment;
             }
+
+            $newItinerary['segments'] = $newSegments;
+            $this->opt->itineraries[] = new Itinerary($newItinerary);
         }
 
         $this->opt->elements[] = new Ticketing([
