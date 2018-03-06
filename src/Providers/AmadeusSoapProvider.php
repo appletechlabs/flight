@@ -620,16 +620,22 @@ class AmadeusSoapProvider
 
                         $flightTiming = $this->getFlightDetails($flightDetails->flightDetails, $cabinProduct->class);
 
-                        $Recommendation = new Recommendation([
+                        $Recommendation = new returnRecommendation([
                  'ref'              => $referencingDetail->refNumber,
-                 'flightDetails'    => $flightTiming->info,
-                 'majCabin'         => $majCabin,
-                 'majAirline'       => $flightDetails->MajAirline,
-                 'stopInfo'         => $info->stopInfo,
-                 'airports'         => $info->airports,
-                 'seatAvailability' => $cabinProduct->status,
+                 'segments'         => [
+                                            [
+                                                    'ref'              => 1,
+                                                    'flightDetails'    => $flightTiming->info,
+                                                    'majCabin'         => $majCabin,
+                                                    'majAirline'       => $flightDetails->MajAirline,
+                                                    'stopInfo'         => $flightInfo->stopInfo,
+                                                    'airports'         => $flightInfo->airports,
+                                                    'seatAvailability' => $cabinProduct[0]->status,
+                                                    'totalFlyingTime'  => $flightDetails->EFT,
+                                                ],
+                                        ],
                  'rateGuaranteed'   => $rateGuaranteed,
-                 'totalFlyingTime'  => $flightDetails->EFT,
+                 'majAirline'       => $majAirline,
                  'provider'         => self::PROVIDER,
                  'fareSummary'      => new fareSummary([
                       'currency' => $currency,
@@ -659,7 +665,7 @@ class AmadeusSoapProvider
         //var_dump($amflightResults);
         $currency = $this->getCurrencyType($amflightResults->response->conversionRate->conversionRateDetail);
 
-        $flightSegments = $amflightResults->response->flightIndex;
+        $flightSegments = Data::dataToArray($amflightResults->response->flightIndex);
         $recommendations = $amflightResults->response->recommendation;
 
         $recommendationRef = 0;
@@ -713,7 +719,9 @@ class AmadeusSoapProvider
                 /* Get Flight booking Classes */
                 $majCabin = [];
                 $cabinProduct = [];
-                foreach ($flightPrice[0]->fareDetails as $fareDetails) {
+
+                $fareDetailsArr = Data::dataToArray($flightPrice[0]->fareDetails);
+                foreach ($fareDetailsArr as $fareDetails) {
                     $majCabin[] = $this->getCabinDescription($fareDetails->majCabin->bookingClassDetails->designator);
                     $cabinProduct[] = $this->seatStatus($fareDetails->groupOfFares);
                 }
@@ -771,37 +779,41 @@ class AmadeusSoapProvider
                 }
 
                 $flightInfo = $this->optimizeInfo($flightDetails->flightDetails);
-                $returnFlightInfo = $this->optimizeInfo($ReturnflightDetails->flightDetails);
-
                 $flightTiming = $this->getFlightDetails($flightDetails->flightDetails, $cabinProduct[0]->class);
-                $returnflightTiming = $this->getFlightDetails($ReturnflightDetails->flightDetails, $cabinProduct[1]->class);
+
+                $segments = [];
+
+                $segments[] = [
+                                'ref'              => 1,
+                                'flightDetails'    => $flightTiming->info,
+                                'majCabin'         => $majCabin,
+                                'majAirline'       => $flightDetails->MajAirline,
+                                'stopInfo'         => $flightInfo->stopInfo,
+                                'airports'         => $flightInfo->airports,
+                                'seatAvailability' => $cabinProduct[0]->status,
+                                'totalFlyingTime'  => $flightDetails->EFT,
+                            ];
+
+                if (isset($ReturnflightDetails)) {
+                   $returnFlightInfo = $this->optimizeInfo($ReturnflightDetails->flightDetails);
+                    $returnflightTiming = $this->getFlightDetails($ReturnflightDetails->flightDetails, $cabinProduct[1]->class);
+                        $segments[] = [
+                                        'ref'              => 2,
+                                        'flightDetails'    => $returnflightTiming->info,
+                                        'majCabin'         => $majCabin,
+                                        'majAirline'       => $flightDetails->MajAirline,
+                                        'stopInfo'         => $returnFlightInfo->stopInfo,
+                                        'airports'         => $returnFlightInfo->airports,
+                                        'seatAvailability' => $cabinProduct[1]->status,
+                                        'totalFlyingTime'  => $ReturnflightDetails->EFT,
+                                    ];
+                }
+
+                
 
                 $Recommendation = new returnRecommendation([
                  'ref'              => $recommendationRef,
-                 'segments'         => [
-                    [
-                            'ref'              => 1,
-                            'flightDetails'    => $flightTiming->info,
-                            'majCabin'         => $majCabin,
-                            'majAirline'       => $flightDetails->MajAirline,
-                            'stopInfo'         => $flightInfo->stopInfo,
-                            'airports'         => $flightInfo->airports,
-                            'seatAvailability' => $cabinProduct[0]->status,
-                            'totalFlyingTime'  => $flightDetails->EFT,
-                        ],
-                    [
-                            'ref'              => 2,
-                            'flightDetails'    => $returnflightTiming->info,
-                            'majCabin'         => $majCabin,
-                            'majAirline'       => $flightDetails->MajAirline,
-                            'stopInfo'         => $returnFlightInfo->stopInfo,
-                            'airports'         => $returnFlightInfo->airports,
-                            'seatAvailability' => $cabinProduct[1]->status,
-                            'totalFlyingTime'  => $ReturnflightDetails->EFT,
-
-                        ],
-                    ],
-
+                 'segments'         => $segments,
                  'rateGuaranteed'   => $rateGuaranteed,
                  'majAirline'       => $majAirline,
                  'provider'         => self::PROVIDER,
