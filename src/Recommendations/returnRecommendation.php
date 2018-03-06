@@ -1,7 +1,6 @@
 <?php
 
 namespace appletechlabs\flight\Recommendations;
-use appletechlabs\flight\Recommendations\segments;
 
 class returnRecommendation
 {
