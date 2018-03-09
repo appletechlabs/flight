@@ -795,9 +795,9 @@ class AmadeusSoapProvider
                             ];
 
                 if (isset($ReturnflightDetails)) {
-                   $returnFlightInfo = $this->optimizeInfo($ReturnflightDetails->flightDetails);
+                    $returnFlightInfo = $this->optimizeInfo($ReturnflightDetails->flightDetails);
                     $returnflightTiming = $this->getFlightDetails($ReturnflightDetails->flightDetails, $cabinProduct[1]->class);
-                        $segments[] = [
+                    $segments[] = [
                                         'ref'              => 2,
                                         'flightDetails'    => $returnflightTiming->info,
                                         'majCabin'         => $majCabin,
@@ -808,8 +808,6 @@ class AmadeusSoapProvider
                                         'totalFlyingTime'  => $ReturnflightDetails->EFT,
                                     ];
                 }
-
-                
 
                 $Recommendation = new returnRecommendation([
                  'ref'              => $recommendationRef,
