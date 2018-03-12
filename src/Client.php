@@ -23,11 +23,6 @@ class Client
         }
     }
 
-    public function test()
-    {
-        return $this->AmadeusSoap;
-    }
-
     public function signIn()
     {
         return $this->AmadeusSoap->securitySignIn();
