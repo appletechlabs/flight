@@ -61,16 +61,7 @@ class Client
         return $fmptResult;
     }
 
-    public function fareBoardSearchOptimzed($fmptResult)
-    {
-        if ($fmptResult['result']->status == 'OK') {
-            return  $this->AmadeusSoap->optimizeResults($fmptResult['result']);
-        } else {
-            return $fmptResult['result'];
-        }
-    }
-
-    public function fareBoardSearchReturnOptimzed($fmptResult)
+        public function fareBoardSearchOptimzed($fmptResult)
     {
         if ($fmptResult['result']->status == 'OK') {
             return  $this->AmadeusSoap->optimizeResultsReturn($fmptResult['result']);
@@ -109,20 +100,11 @@ class Client
             if ($rawcalendarResult['result']->status !== 'OK') {
                 $result['result']->errResponse = $rawcalendarResult['result'];
             }
-        } else {
-            switch ($type) {
-                case 'oneway':
-                    $result['result']->status = 'OK';
-                    $result['calendarSearch'] = $this->FareMasterPricerCalendarSort($rawcalendarResult);
-                    $result['fareBoardSearch'] = $this->fareBoardSearchOptimzed($rawfmptResult);
-                    break;
-
-                case 'return':
-                    $result['result']->status = 'OK';
-                    $result['calendarSearch'] = $this->FareMasterPricerCalendarSort($rawcalendarResult);
-                    $result['fareBoardSearch'] = $this->fareBoardSearchReturnOptimzed($rawfmptResult);
-                    break;
-            }
+        } else {            
+            $result['result']->status = 'OK';
+            $result['calendarSearch'] = $this->FareMasterPricerCalendarSort($rawcalendarResult);
+            $result['fareBoardSearch'] = $this->fareBoardSearchOptimzed($rawfmptResult);
+                
         }
 
         return $result;
