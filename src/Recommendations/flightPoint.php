@@ -8,5 +8,3 @@ class flightPoint
     public $airport;
     public $terminal;
 }
-
-?>

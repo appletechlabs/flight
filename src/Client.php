@@ -61,7 +61,7 @@ class Client
         return $fmptResult;
     }
 
-        public function fareBoardSearchOptimzed($fmptResult)
+    public function fareBoardSearchOptimzed($fmptResult)
     {
         if ($fmptResult['result']->status == 'OK') {
             return  $this->AmadeusSoap->optimizeResults($fmptResult['result']);
@@ -100,11 +100,10 @@ class Client
             if ($rawcalendarResult['result']->status !== 'OK') {
                 $result['result']->errResponse = $rawcalendarResult['result'];
             }
-        } else {            
+        } else {
             $result['result']->status = 'OK';
             $result['calendarSearch'] = $this->FareMasterPricerCalendarSort($rawcalendarResult);
             $result['fareBoardSearch'] = $this->fareBoardSearchOptimzed($rawfmptResult);
-                
         }
 
         return $result;

@@ -524,8 +524,6 @@ class AmadeusSoapProvider
         return $currency;
     }
 
-      
-
     /**
      * Optimize Amadeus Results for Flights With Return Type.
      *
