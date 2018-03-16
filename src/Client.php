@@ -64,7 +64,7 @@ class Client
         public function fareBoardSearchOptimzed($fmptResult)
     {
         if ($fmptResult['result']->status == 'OK') {
-            return  $this->AmadeusSoap->optimizeResultsReturn($fmptResult['result']);
+            return  $this->AmadeusSoap->optimizeResults($fmptResult['result']);
         } else {
             return $fmptResult['result'];
         }

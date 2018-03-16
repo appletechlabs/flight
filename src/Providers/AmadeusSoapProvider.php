@@ -524,134 +524,7 @@ class AmadeusSoapProvider
         return $currency;
     }
 
-    /**
-     * Optimize Amadeus Results for Flights With One Way.
-     *
-     * @param array $amflightResults
-     *
-     * @return Result
-     */
-    public function optimizeResults($amflightResults)
-    {
-        //var_dump($amflightResults);
-        /* This doesn't work with multiple itineray options */
-        /* Todo : array check*/
-
-        $currency = $this->getCurrencyType($amflightResults->response->conversionRate->conversionRateDetail);
-
-        $groupOfFlights = $amflightResults->response->flightIndex->groupOfFlights;
-        $recommendations = $amflightResults->response->recommendation;
-
-        $recommendations = Data::dataToArray($recommendations);
-        foreach ($recommendations as $recommendation) {
-            $recPriceInfo = Data::dataToArray($recommendation->recPriceInfo->monetaryDetail);
-
-            foreach ($recPriceInfo as $recPriceInfoItem) {
-                if (isset($recPriceInfoItem->amountType) && $recPriceInfoItem->amountType == 'CR') {
-                    // Conversion rate not guaranteed results
-                    $totalAmount = $recPriceInfoItem->amount;
-                    $rateGuaranteed = false;
-                    break;
-                } else {
-                    $totalAmount = $recPriceInfo[0]->amount;
-                    $rateGuaranteed = true;
-                }
-            }
-
-            // Recommendaton References
-            $segmentFlightReferences = Data::dataToArray($recommendation->segmentFlightRef);
-            $result = new \stdClass();
-            foreach ($segmentFlightReferences as $segmentFlightRef) {
-
-         // Flight Proposals and Currency Conversions
-                $referencingDetails = Data::dataToArray($segmentFlightRef->referencingDetail);
-                foreach ($referencingDetails as $referencingDetailKey => $referencingDetail) {  // Get Only Segment refrernces from refQualifier = S
-                    if ($referencingDetail->refQualifier == 'S') {
-                        $flightPrice = Data::dataToArray($recommendation->paxFareProduct);
-                        $majCabin = $this->getCabinDescription($flightPrice[0]->fareDetails->majCabin->bookingClassDetails->designator);
-                        $cabinProduct = $this->seatStatus($flightPrice[0]->fareDetails->groupOfFares);
-
-                        $paxFareList = [];
-
-                        foreach ($flightPrice as $flightPriceKey => $flightPriceitem) {
-                            $type = $flightPriceitem->paxReference->ptc;
-                            $noOfPassengers = count($flightPriceitem->paxReference->traveller);
-
-                            $taxesAndFees = $flightPriceitem->paxFareDetail->totalTaxAmount;
-                            $total = $flightPriceitem->paxFareDetail->totalFareAmount;
-                            $baseFare = round($total - $taxesAndFees, 2);
-
-                            if (isset($flightPriceitem->fare)) {
-                                $fareRules = $flightPriceitem->fare ?? null;
-
-                                if (!is_array($fareRules)) {
-                                    $fareRules = Data::dataToArray($fareRules);
-                                }
-
-                                $paxFareRules = [];
-                                foreach ($fareRules as $fareRulekey => $fareRule) {
-                                    $informationType = $fareRule->pricingMessage->freeTextQualification->informationType;
-                                    $description = $fareRule->pricingMessage->description;
-                                    $monetaryDetail = $fareRule->monetaryInformation->monetaryDetail ?? null;
-
-                                    $paxFareRule = new Rules([
-                           'informationType' => $informationType,
-                           'description'     => $description,
-                           'monetaryDetail'  => $monetaryDetail,
-                        ]);
-                                    $paxFareRules[] = $paxFareRule;
-                                }
-                            }
-
-                            $paxFare = new paxFare([
-                      'type'           => $type,
-                      'noOfPassengers' => $noOfPassengers,
-                      'baseFare'       => $baseFare,
-                      'taxesAndFees'   => $taxesAndFees,
-                      'total'          => $total,
-                      'paxFareRules'   => $paxFareRules ?? null,
-                  ]);
-
-                            $paxFareList[] = $paxFare;
-                        }
-
-                        $flightDetails = $this->getFlightPrposals($referencingDetail->refNumber, $groupOfFlights);
-                        $info = $this->optimizeInfo($flightDetails->flightDetails);
-
-                        $flightTiming = $this->getFlightDetails($flightDetails->flightDetails, $cabinProduct->class);
-
-                        $Recommendation = new returnRecommendation([
-                 'ref'              => $referencingDetail->refNumber,
-                 'segments'         => [
-                                            [
-                                                    'ref'              => 1,
-                                                    'flightDetails'    => $flightTiming->info,
-                                                    'majCabin'         => $majCabin,
-                                                    'majAirline'       => $flightDetails->MajAirline,
-                                                    'stopInfo'         => $flightInfo->stopInfo,
-                                                    'airports'         => $flightInfo->airports,
-                                                    'seatAvailability' => $cabinProduct[0]->status,
-                                                    'totalFlyingTime'  => $flightDetails->EFT,
-                                                ],
-                                        ],
-                 'rateGuaranteed'   => $rateGuaranteed,
-                 'majAirline'       => $majAirline,
-                 'provider'         => self::PROVIDER,
-                 'fareSummary'      => new fareSummary([
-                      'currency' => $currency,
-                      'pax'      => $paxFareList,
-                      'total'    => $totalAmount,
-                    ]),
-                ]);
-
-                        $Recommendations[] = $Recommendation;
-                    }
-                }
-            }
-        }
-
-        return $Recommendations;
-    }
+      
 
     /**
      * Optimize Amadeus Results for Flights With Return Type.
@@ -660,7 +533,7 @@ class AmadeusSoapProvider
      *
      * @return Result
      */
-    public function optimizeResultsReturn($amflightResults)
+    public function optimizeResults($amflightResults)
     {
         //var_dump($amflightResults);
         $currency = $this->getCurrencyType($amflightResults->response->conversionRate->conversionRateDetail);
