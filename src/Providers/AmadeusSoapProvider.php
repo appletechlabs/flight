@@ -40,7 +40,6 @@ use appletechlabs\flight\Providers\AmadeusSoapProvider\PNR_AddMultiElements;
 use appletechlabs\flight\Recommendations\fareSummary;
 use appletechlabs\flight\Recommendations\paxFare;
 use appletechlabs\flight\Recommendations\Recommendation;
-use appletechlabs\flight\Recommendations\returnRecommendation;
 use appletechlabs\flight\Recommendations\Rules;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
@@ -680,7 +679,7 @@ class AmadeusSoapProvider
                                     ];
                 }
 
-                $Recommendation = new returnRecommendation([
+                $Recommendation = new Recommendation([
                  'ref'              => $recommendationRef,
                  'segments'         => $segments,
                  'rateGuaranteed'   => $rateGuaranteed,

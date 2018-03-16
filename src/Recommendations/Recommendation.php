@@ -2,7 +2,7 @@
 
 namespace appletechlabs\flight\Recommendations;
 
-class returnRecommendation
+class Recommendation
 {
     public $ref;
     public $segments;
