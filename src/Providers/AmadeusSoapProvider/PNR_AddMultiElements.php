@@ -20,16 +20,15 @@ class PNR_AddMultiElements
 
         $this->opt = new PnrCreatePnrOptions();
         $this->opt->actionCode = PnrCreatePnrOptions::ACTION_END_TRANSACT_RETRIEVE; //0 Do not yet save the PNR and keep in context.
-        foreach($contactInfo["type"] as $trvKey => $trvType){
+        foreach ($contactInfo['type'] as $trvKey => $trvType) {
             $this->opt->travellers[] = new Traveller([
-                'number'      => $contactInfo['number'][$trvKey],
-                'firstName'   => $contactInfo['firstName'][$trvKey],
-                'lastName'    => $contactInfo['lastName'][$trvKey],
-                'dateOfBirth' => $contactInfo['dateOfBirth'][$trvKey],
+                'number'        => $contactInfo['number'][$trvKey],
+                'firstName'     => $contactInfo['firstName'][$trvKey],
+                'lastName'      => $contactInfo['lastName'][$trvKey],
+                'dateOfBirth'   => $contactInfo['dateOfBirth'][$trvKey],
                 'travellerType' => $trvType,
             ]);
         }
-        
 
         foreach ($itinerary as $itinerarykey => $itineraryItem) {
             $newItinerary = [];
@@ -60,14 +59,12 @@ class PNR_AddMultiElements
             'ticketMode' => Ticketing::TICKETMODE_OK,
         ]);
 
-        foreach($contactInfo['contactNo'] as $contactNo)
-        {
+        foreach ($contactInfo['contactNo'] as $contactNo) {
             $this->opt->elements[] = new Contact([
                 'type'  => Contact::TYPE_PHONE_MOBILE,
                 'value' => $contactNo,
             ]);
         }
-        
 
         $this->opt->elements[] = new FormOfPayment([
             'type' => FormOfPayment::TYPE_CASH,
