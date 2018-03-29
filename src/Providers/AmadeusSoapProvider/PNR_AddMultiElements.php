@@ -20,13 +20,13 @@ class PNR_AddMultiElements
 
         $this->opt = new PnrCreatePnrOptions();
         $this->opt->actionCode = PnrCreatePnrOptions::ACTION_END_TRANSACT_RETRIEVE; //0 Do not yet save the PNR and keep in context.
-        foreach ($contactInfo['type'] as $trvKey => $trvType) {
+        foreach ($contactInfo as $info) {
             $this->opt->travellers[] = new Traveller([
-                'number'        => $contactInfo['number'][$trvKey],
-                'firstName'     => $contactInfo['firstName'][$trvKey],
-                'lastName'      => $contactInfo['lastName'][$trvKey],
-                'dateOfBirth'   => $contactInfo['dateOfBirth'][$trvKey],
-                'travellerType' => $trvType,
+                'number'        => $info['number'],
+                'firstName'     => $info['firstName'],
+                'lastName'      => $info['lastName'],
+                'dateOfBirth'   => $info['dateOfBirth'],
+                'travellerType' => $info['type'],
             ]);
         }
 
@@ -59,12 +59,11 @@ class PNR_AddMultiElements
             'ticketMode' => Ticketing::TICKETMODE_OK,
         ]);
 
-        foreach ($contactInfo['contactNo'] as $contactNo) {
-            $this->opt->elements[] = new Contact([
-                'type'  => Contact::TYPE_PHONE_MOBILE,
-                'value' => $contactNo,
-            ]);
-        }
+        
+        $this->opt->elements[] = new Contact([
+            'type'  => Contact::TYPE_PHONE_MOBILE,
+            'value' => $contactInfo[0],
+        ]);
 
         $this->opt->elements[] = new FormOfPayment([
             'type' => FormOfPayment::TYPE_CASH,
