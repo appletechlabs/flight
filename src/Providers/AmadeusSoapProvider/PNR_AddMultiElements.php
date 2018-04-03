@@ -62,7 +62,7 @@ class PNR_AddMultiElements
         
         $this->opt->elements[] = new Contact([
             'type'  => Contact::TYPE_PHONE_MOBILE,
-            'value' => $contactInfo[0],
+            'value' => $contactInfo[0]['contactNo'],
         ]);
 
         $this->opt->elements[] = new FormOfPayment([
