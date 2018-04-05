@@ -4,13 +4,13 @@ namespace appletechlabs\flight\Providers\AmadeusSoapProvider;
 
 use Amadeus\Client\RequestOptions\Pnr\Element\Contact;
 use Amadeus\Client\RequestOptions\Pnr\Element\FormOfPayment;
+use Amadeus\Client\RequestOptions\Pnr\Element\ServiceRequest;
 use Amadeus\Client\RequestOptions\Pnr\Element\Ticketing;
 use Amadeus\Client\RequestOptions\Pnr\Itinerary;
+use Amadeus\Client\RequestOptions\Pnr\Reference;
 use Amadeus\Client\RequestOptions\Pnr\Segment\Air;
 use Amadeus\Client\RequestOptions\Pnr\Traveller;
 use Amadeus\Client\RequestOptions\PnrCreatePnrOptions;
-use Amadeus\Client\RequestOptions\Pnr\Element\ServiceRequest;
-use Amadeus\Client\RequestOptions\Pnr\Reference;
 
 class PNR_AddMultiElements
 {
@@ -60,7 +60,6 @@ class PNR_AddMultiElements
             'ticketMode' => Ticketing::TICKETMODE_OK,
         ]);
 
-        
         $this->opt->elements[] = new Contact([
             'type'  => Contact::TYPE_PHONE_MOBILE,
             'value' => $contactInfo[0]['contactNo'],
