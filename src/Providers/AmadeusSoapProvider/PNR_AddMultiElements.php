@@ -9,6 +9,8 @@ use Amadeus\Client\RequestOptions\Pnr\Itinerary;
 use Amadeus\Client\RequestOptions\Pnr\Segment\Air;
 use Amadeus\Client\RequestOptions\Pnr\Traveller;
 use Amadeus\Client\RequestOptions\PnrCreatePnrOptions;
+use Amadeus\Client\RequestOptions\Pnr\Element\ServiceRequest;
+use Amadeus\Client\RequestOptions\Pnr\Reference;
 
 class PNR_AddMultiElements
 {
@@ -19,7 +21,7 @@ class PNR_AddMultiElements
         $optArray = [];
 
         $this->opt = new PnrCreatePnrOptions();
-        $this->opt->actionCode = PnrCreatePnrOptions::ACTION_END_TRANSACT_RETRIEVE; //0 Do not yet save the PNR and keep in context.
+        $this->opt->actionCode = 0; //0 Do not yet save the PNR and keep in context.
         foreach ($contactInfo as $info) {
             $this->opt->travellers[] = new Traveller([
                 'number'        => $info['number'],
@@ -30,30 +32,29 @@ class PNR_AddMultiElements
             ]);
         }
 
-        foreach ($itinerary as $itinerarykey => $itineraryItem) {
-            $newItinerary = [];
+        // foreach ($itinerary as $itinerarykey => $itineraryItem) {
+        //     $newItinerary = [];
 
-            $newItinerary['from'] = $itineraryItem['from'];
-            $newItinerary['to'] = $itineraryItem['to'];
+        //     $newItinerary['from'] = $itineraryItem['from'];
+        //     $newItinerary['to'] = $itineraryItem['to'];
 
-            $newSegments = [];
+        //     $newSegments = [];
 
-            foreach ($itineraryItem['segments'] as $segment) {
-                $newSegment = new Air([
-                  'date'         => $segment['date'],
-                  'origin'       => $segment['origin'],
-                  'destination'  => $segment['destination'],
-                  'flightNumber' => $segment['flightNumber'],
-                  'bookingClass' => $segment['bookingClass'],
-                  'company'      => $segment['company'],
-                ]);
+        //     foreach ($itineraryItem['segments'] as $segment) {
+        //         $newSegments[] = new Air([
+        //           'date'         => $segment['date'],
+        //           'origin'       => $segment['origin'],
+        //           'destination'  => $segment['destination'],
+        //           'flightNumber' => $segment['flightNumber'],
+        //           'bookingClass' => $segment['bookingClass'],
+        //           'company'      => $segment['company'],
+        //         ]);
 
-                $newSegments[] = $newSegment;
-            }
+        //     }
 
-            $newItinerary['segments'] = $newSegments;
-            $this->opt->itineraries[] = new Itinerary($newItinerary);
-        }
+        //     $newItinerary['segments'] = $newSegments;
+        //     $this->opt->itineraries[] = new Itinerary($newItinerary);
+        // }
 
         $this->opt->elements[] = new Ticketing([
             'ticketMode' => Ticketing::TICKETMODE_OK,
@@ -69,6 +70,21 @@ class PNR_AddMultiElements
             'type' => FormOfPayment::TYPE_CASH,
         ]);
 
+        // $this->opt->elements[] = new ServiceRequest([
+        //     'type' => 'DOCS',
+        //     'status' => ServiceRequest::STATUS_HOLD_CONFIRMED,
+        //     'company' => '1A',
+        //     'quantity' => 2,
+        //     'freeText' => [
+        //         '----08JAN47-M--BOWIE-DAVID'
+        //     ],
+        //     'references' => [
+        //         new Reference([
+        //             'type' => Reference::TYPE_PASSENGER_TATTOO,
+        //             'id' => 1
+        //         ])
+        //     ]
+        // ]);
         //The required Received From (RF) element will automatically be added by the library if you didn't provide one.
 
         return $this->opt;

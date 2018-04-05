@@ -811,8 +811,8 @@ class AmadeusSoapProvider
         $pnrReply = $this->amadeusClient->pnrAddMultiElements(
         new PnrAddMultiElementsOptions([
             'actionCode' => [
-              PnrAddMultiElementsOptions::ACTION_END_TRANSACT_RETRIEVE, //ET: END AND RETRIEVE
-              PnrAddMultiElementsOptions::ACTION_WARNING_AT_EOT, //30
+              11, //ET: END AND RETRIEVE
+              30, //30
             ],
         ])
     );
@@ -932,17 +932,17 @@ class AmadeusSoapProvider
         return $this->amadeusClient->getLastResponseHeaders();
     }
 
-    public function FarePricePnrWithBookingClassOptions($validatingCarrier)
+    public function FarePricePnrWithBookingClassOptions($validatingCarrier = false)
     {
         $pricingResponse = $this->amadeusClient->farePricePnrWithBookingClass(
-        new FarePricePnrWithBookingClassOptions([
-            'overrideOptions' => [
-                FarePricePnrWithBookingClassOptions::OVERRIDE_FARETYPE_PUB,
-                FarePricePnrWithBookingClassOptions::OVERRIDE_FARETYPE_UNI,
-                FarePricePnrWithBookingClassOptions::OVERRIDE_RETURN_LOWEST,
-            ],
-        ])
-    );
+            new FarePricePnrWithBookingClassOptions([
+                'overrideOptions' => [
+                    FarePricePnrWithBookingClassOptions::OVERRIDE_FARETYPE_PUB,
+                    FarePricePnrWithBookingClassOptions::OVERRIDE_FARETYPE_UNI,
+                    FarePricePnrWithBookingClassOptions::OVERRIDE_RETURN_LOWEST,
+                ],
+            ])
+        );
 
         return $pricingResponse;
     }

@@ -121,7 +121,7 @@ class Client
         return $this->AmadeusSoap->PNR_Retrieve($pnr);
     }
 
-    public function FarePricePnrWithBookingClass($validatingCarrier)
+    public function FarePricePnrWithBookingClass($validatingCarrier = false)
     {
         return $this->AmadeusSoap->FarePricePnrWithBookingClassOptions($validatingCarrier);
     }
