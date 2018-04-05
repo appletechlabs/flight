@@ -564,7 +564,6 @@ class AmadeusSoapProvider
 
                 $result = new \stdClass();
 
-                
                 /* Flight Proposals and Currency Conversions */
                 $referencingDetails = Data::dataToArray($segmentFlightRef->referencingDetail);
 
@@ -583,8 +582,9 @@ class AmadeusSoapProvider
                     }
                 }
 
-                if(!isset($flightDetails))
-                break;
+                if (!isset($flightDetails)) {
+                    break;
+                }
 
                 $recommendationRef += 1;
 
