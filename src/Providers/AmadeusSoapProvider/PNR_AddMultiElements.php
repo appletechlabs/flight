@@ -16,7 +16,7 @@ class PNR_AddMultiElements
 {
     public $opt;
 
-    public function __construct($contactInfo,$company)
+    public function __construct($contactInfo, $company)
     {
         $optArray = [];
 
@@ -70,19 +70,19 @@ class PNR_AddMultiElements
         ]);
 
         $this->opt->elements[] = new ServiceRequest([
-            'type' => 'DOCS',
-            'status' => ServiceRequest::STATUS_HOLD_CONFIRMED,
-            'company' => 'UL',
+            'type'     => 'DOCS',
+            'status'   => ServiceRequest::STATUS_HOLD_CONFIRMED,
+            'company'  => 'UL',
             'quantity' => 1,
             'freeText' => [
-                'P-LKA-N3582413-LKA-20MAY90-M-03OCT23-SILVA-AROSHA'
+                'P-LKA-N3582413-LKA-20MAY90-M-03OCT23-SILVA-AROSHA',
             ],
             'references' => [
                 new Reference([
                     'type' => Reference::TYPE_PASSENGER_TATTOO,
-                    'id' => 2
-                ])
-            ]
+                    'id'   => 2,
+                ]),
+            ],
         ]);
         // $this->opt->elements[] = new ServiceRequest([
         //     'type' => 'DOCS',
