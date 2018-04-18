@@ -786,9 +786,9 @@ class AmadeusSoapProvider
         return $sellResult;
     }
 
-    public function PNR_AddMultiElements($itinerary, $contactInfo)
+    public function PNR_AddMultiElements($contactInfo,$company)
     {
-        $PnrAddOpt = new PNR_AddMultiElements($itinerary, $contactInfo);
+        $PnrAddOpt = new PNR_AddMultiElements($contactInfo,$company);
 
         $createdPnr = $this->amadeusClient->pnrCreatePnr($PnrAddOpt->opt);
 
@@ -827,6 +827,9 @@ class AmadeusSoapProvider
           'pricings' => [
               new Pricing([
                   'tstNumber' => 1,
+              ]),
+              new Pricing([
+                  'tstNumber' => 2,
               ]),
           ],
       ])
