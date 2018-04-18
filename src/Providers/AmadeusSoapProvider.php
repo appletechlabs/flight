@@ -786,9 +786,9 @@ class AmadeusSoapProvider
         return $sellResult;
     }
 
-    public function PNR_AddMultiElements($contactInfo,$company)
+    public function PNR_AddMultiElements($contactInfo, $company)
     {
-        $PnrAddOpt = new PNR_AddMultiElements($contactInfo,$company);
+        $PnrAddOpt = new PNR_AddMultiElements($contactInfo, $company);
 
         $createdPnr = $this->amadeusClient->pnrCreatePnr($PnrAddOpt->opt);
 
