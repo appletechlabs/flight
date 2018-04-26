@@ -11,10 +11,7 @@ use Amadeus\Client\RequestOptions\Pnr\Reference;
 use Amadeus\Client\RequestOptions\Pnr\Segment\Air;
 use Amadeus\Client\RequestOptions\Pnr\Traveller;
 use Amadeus\Client\RequestOptions\PnrCreatePnrOptions;
-use appletechlabs\flight\Recommendations\Rules;
-
 use appletechlabs\flight\Providers\AmadeusSoapProvider\PNR_AddMultiElements\Passport;
-
 
 class PNR_AddMultiElements
 {
@@ -36,7 +33,7 @@ class PNR_AddMultiElements
             ]);
 
             $passport = $info['passport'];
-           
+
             $this->opt->elements[] = new ServiceRequest([
                 'type'     => 'DOCS',
                 'status'   => ServiceRequest::STATUS_HOLD_CONFIRMED,
@@ -91,7 +88,6 @@ class PNR_AddMultiElements
             'type' => FormOfPayment::TYPE_CASH,
         ]);
 
-        
         // $this->opt->elements[] = new ServiceRequest([
         //     'type' => 'DOCS',
         //     'status' => ServiceRequest::STATUS_HOLD_CONFIRMED,

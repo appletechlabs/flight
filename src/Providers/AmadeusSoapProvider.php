@@ -781,6 +781,7 @@ class AmadeusSoapProvider
     {
         $opt = new AirSellFromRecommendation($options);
         $sellResult = $this->amadeusClient->airSellFromRecommendation($opt->RecOption);
+
         return $sellResult;
     }
 
@@ -788,10 +789,10 @@ class AmadeusSoapProvider
     {
         $PnrAddOpt = new PNR_AddMultiElements($travellerInfo, $company);
         $createdPnr = $this->amadeusClient->pnrCreatePnr($PnrAddOpt->opt);
+
         return $createdPnr;
     }
 
-   
     public function PNR_AddMultiElementsEnd()
     {
         $pnrReply = $this->amadeusClient->pnrAddMultiElements(
