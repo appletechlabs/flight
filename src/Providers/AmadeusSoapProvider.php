@@ -780,42 +780,28 @@ class AmadeusSoapProvider
     public function Air_SellFromRecommendation($options)
     {
         $opt = new AirSellFromRecommendation($options);
-
         $sellResult = $this->amadeusClient->airSellFromRecommendation($opt->RecOption);
-
         return $sellResult;
     }
 
-    public function PNR_AddMultiElements($contactInfo, $company)
+    public function PNR_AddMultiElements($travellerInfo, $company)
     {
-        $PnrAddOpt = new PNR_AddMultiElements($contactInfo, $company);
-
+        $PnrAddOpt = new PNR_AddMultiElements($travellerInfo, $company);
         $createdPnr = $this->amadeusClient->pnrCreatePnr($PnrAddOpt->opt);
-
-        // $pnrReply = $this->amadeusClient->pnrAddMultiElements(
-        //     new PnrAddMultiElementsOptions([
-        //         'actionCode' => PnrAddMultiElementsOptions::ACTION_END_TRANSACT_RETRIEVE //ET: END AND RETRIEVE
-        //     ])
-        // );
-
         return $createdPnr;
     }
 
-    public function addFormOfPayment()
-    {
-        // code...
-    }
-
+   
     public function PNR_AddMultiElementsEnd()
     {
         $pnrReply = $this->amadeusClient->pnrAddMultiElements(
-        new PnrAddMultiElementsOptions([
-            'actionCode' => [
-              11, //ET: END AND RETRIEVE
-              30, //30
-            ],
-        ])
-    );
+            new PnrAddMultiElementsOptions([
+                'actionCode' => [
+                11, //ET: END AND RETRIEVE
+                30, //30
+                ],
+            ])
+        );
 
         return $pnrReply;
     }
@@ -823,17 +809,17 @@ class AmadeusSoapProvider
     public function createTSTFromPricing()
     {
         $createTstResponse = $this->amadeusClient->ticketCreateTSTFromPricing(
-      new TicketCreateTstFromPricingOptions([
-          'pricings' => [
-              new Pricing([
-                  'tstNumber' => 1,
-              ]),
-              new Pricing([
-                  'tstNumber' => 2,
-              ]),
-          ],
-      ])
-    );
+        new TicketCreateTstFromPricingOptions([
+            'pricings' => [
+                new Pricing([
+                    'tstNumber' => 1,
+                ]),
+                new Pricing([
+                    'tstNumber' => 2,
+                ]),
+            ],
+        ])
+        );
 
         return $createTstResponse;
     }

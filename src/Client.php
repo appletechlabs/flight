@@ -111,9 +111,9 @@ class Client
         return $airSellRec;
     }
 
-    public function PNR_AddMultiElements($contactInfo, $company)
+    public function PNR_AddMultiElements($travellerInfo, $company)
     {
-        return $this->AmadeusSoap->PNR_AddMultiElements($contactInfo, $company);
+        return $this->AmadeusSoap->PNR_AddMultiElements($travellerInfo, $company);
     }
 
     public function PNR_Retrieve($pnr)

@@ -11,24 +11,46 @@ use Amadeus\Client\RequestOptions\Pnr\Reference;
 use Amadeus\Client\RequestOptions\Pnr\Segment\Air;
 use Amadeus\Client\RequestOptions\Pnr\Traveller;
 use Amadeus\Client\RequestOptions\PnrCreatePnrOptions;
+use appletechlabs\flight\Recommendations\Rules;
+
+use appletechlabs\flight\Providers\AmadeusSoapProvider\PNR_AddMultiElements\Passport;
+
 
 class PNR_AddMultiElements
 {
     public $opt;
 
-    public function __construct($contactInfo, $company)
+    public function __construct($travellerInfo, $company)
     {
         $optArray = [];
 
         $this->opt = new PnrCreatePnrOptions();
         $this->opt->actionCode = 0; //0 Do not yet save the PNR and keep in context.
-        foreach ($contactInfo as $info) {
+        foreach ($travellerInfo as $info) {
             $this->opt->travellers[] = new Traveller([
                 'number'        => $info['number'],
                 'firstName'     => $info['firstName'],
                 'lastName'      => $info['lastName'],
                 'dateOfBirth'   => $info['dateOfBirth'],
                 'travellerType' => $info['type'],
+            ]);
+
+            $passport = $info['passport'];
+           
+            $this->opt->elements[] = new ServiceRequest([
+                'type'     => 'DOCS',
+                'status'   => ServiceRequest::STATUS_HOLD_CONFIRMED,
+                'company'  => $company,
+                'quantity' => 1,
+                'freeText' => [
+                    $passport->getPPString(),
+                ],
+                'references' => [
+                    new Reference([
+                        'type' => Reference::TYPE_PASSENGER_TATTOO,
+                        'id'   => 2,
+                    ]),
+                ],
             ]);
         }
 
@@ -62,28 +84,14 @@ class PNR_AddMultiElements
 
         $this->opt->elements[] = new Contact([
             'type'  => Contact::TYPE_PHONE_MOBILE,
-            'value' => $contactInfo[0]['contactNo'],
+            'value' => $travellerInfo[0]['contactNo'],
         ]);
 
         $this->opt->elements[] = new FormOfPayment([
             'type' => FormOfPayment::TYPE_CASH,
         ]);
 
-        $this->opt->elements[] = new ServiceRequest([
-            'type'     => 'DOCS',
-            'status'   => ServiceRequest::STATUS_HOLD_CONFIRMED,
-            'company'  => 'UL',
-            'quantity' => 1,
-            'freeText' => [
-                'P-LKA-N3582413-LKA-20MAY90-M-03OCT23-SILVA-AROSHA',
-            ],
-            'references' => [
-                new Reference([
-                    'type' => Reference::TYPE_PASSENGER_TATTOO,
-                    'id'   => 2,
-                ]),
-            ],
-        ]);
+        
         // $this->opt->elements[] = new ServiceRequest([
         //     'type' => 'DOCS',
         //     'status' => ServiceRequest::STATUS_HOLD_CONFIRMED,
