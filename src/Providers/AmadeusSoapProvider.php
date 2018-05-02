@@ -799,7 +799,7 @@ class AmadeusSoapProvider
             new PnrAddMultiElementsOptions([
                 'actionCode' => [
                 11, //ET: END AND RETRIEVE
-                30, //30
+                //Add code 30 To prevent a PNR being saved when there is a warning message returned
                 ],
             ])
         );
