@@ -145,6 +145,24 @@ class AmadeusSoapProvider
             break;
     }
     }
+    public function getCabin($cabinType)
+    {
+        switch ($cabinType) {
+            //Economy Class
+            case 'Y':
+                return FareMasterPricerTbSearch::CABIN_ECONOMY;
+                break;
+            //Business Class
+            case 'C':
+                return FareMasterPricerTbSearch::CABIN_BUSINESS;
+                break;
+            //First Class
+            case 'F':
+                return FareMasterPricerTbSearch::CABIN_FIRST_SUPERSONIC;
+                break;
+        }
+
+    }
 
     public function getItinerarCount($itineraries)
     {
@@ -728,6 +746,7 @@ class AmadeusSoapProvider
     {
         $passengers = $this->getPassengersCount($opt->passengers);
         $itineraries = $this->getItinerarCount($opt->itineraries);
+        $cabin = $this->getCabin($opt->cabinType);
 
         $opt = new FareMasterPricerTbSearch([
                 'nrOfRequestedResults'    => $opt->nrOfRequestedResults,
@@ -741,6 +760,8 @@ class AmadeusSoapProvider
                     'CUC',
                 ],
                  'currencyOverride' => $opt->currencyOverride,
+                 'cabinClass' => $cabin,
+                 'cabinOption' => FareMasterPricerTbSearch::CABINOPT_MANDATORY,
             ]);
 
         $fareMPTS = $this->amadeusClient->fareMasterPricerTravelBoardSearch($opt);

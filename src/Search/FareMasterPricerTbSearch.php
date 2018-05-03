@@ -9,6 +9,7 @@ class FareMasterPricerTbSearch
     public $passengers;
     public $itineraries;
     public $currencyOverride;
+    public $cabinType;
 
     public function __construct($data = [])
     {
@@ -23,6 +24,7 @@ class FareMasterPricerTbSearch
             $this->passengers = $data['passengers'];
             $this->itineraries = $data['itineraries'];
             $this->currencyOverride = $data['currencyOverride'];
+            $this->cabinType = $data['cabinType'];
         }
     }
 }

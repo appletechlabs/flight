@@ -44,7 +44,7 @@ class PNR_AddMultiElements
                 ],
                 'references' => [
                     new Reference([
-                        'type' => Reference::TYPE_PASSENGER_TATTOO,
+                        'type' => Reference::TYPE_PASSENGER_REQUEST,
                         'id'   => $info['number'],
                     ]),
                 ],
