@@ -145,6 +145,7 @@ class AmadeusSoapProvider
             break;
     }
     }
+
     public function getCabin($cabinType)
     {
         switch ($cabinType) {
@@ -161,7 +162,6 @@ class AmadeusSoapProvider
                 return FareMasterPricerTbSearch::CABIN_FIRST_SUPERSONIC;
                 break;
         }
-
     }
 
     public function getItinerarCount($itineraries)
@@ -760,8 +760,8 @@ class AmadeusSoapProvider
                     'CUC',
                 ],
                  'currencyOverride' => $opt->currencyOverride,
-                 'cabinClass' => $cabin,
-                 'cabinOption' => FareMasterPricerTbSearch::CABINOPT_MANDATORY,
+                 'cabinClass'       => $cabin,
+                 'cabinOption'      => FareMasterPricerTbSearch::CABINOPT_MANDATORY,
             ]);
 
         $fareMPTS = $this->amadeusClient->fareMasterPricerTravelBoardSearch($opt);
