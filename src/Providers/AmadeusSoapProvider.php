@@ -554,7 +554,7 @@ class AmadeusSoapProvider
         $currency = $this->getCurrencyType($amflightResults->response->conversionRate->conversionRateDetail);
 
         $flightSegments = Data::dataToArray($amflightResults->response->flightIndex);
-        $recommendations = $amflightResults->response->recommendation;
+        $recommendations = Data::dataToArray($amflightResults->response->recommendation);
 
         $recommendationRef = 0;
         $results = [];
